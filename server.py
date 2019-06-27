@@ -3,7 +3,7 @@ from flask_cors import CORS
 from views import user_app,cart_app
 
 APP_CONFIG={
-    'host': 'localhost',
+    'host': '0.0.0.0',
     'port': 8004,
     'debug': True
 }
