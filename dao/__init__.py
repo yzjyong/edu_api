@@ -6,8 +6,8 @@ from logger import api_logger
 DB_CONFIG = {
     "host":"localhost",
     "port":3306,
-    "user":"eduadmin",
-    "password":"edu7654",
+    "user":"root",
+    "password":"123456",
     "db":"edu_api_db",
     "charset":"utf8"
 }
@@ -38,7 +38,7 @@ class BaseDao():
         self.db = DB()
 
     def save(self,table_name,**values):
-        sql = 'replace into %s(%s) values(%s)' % \
+        sql = 'insert into %s(%s) values(%s)' % \
               (table_name,
                ','.join(values.keys()),
                ','.join(['%%(%s)s' % key for key in values.keys()])
@@ -49,6 +49,18 @@ class BaseDao():
             api_logger.info('%s ok!' % sql)
             success = True
         return success
+
+    def update(self, table_name, key, value, where=None, args=None):
+        sql = "update {} set {}='{}' where {}='{}' ".format(
+            table_name, key, value, where, args
+        )
+        succuss = False
+        with self.db as c:
+            print(sql)
+            c.execute(sql)
+            api_logger.info('%s ok!' % sql)
+            succuss = True
+        return succuss
 
     def delete(self,table_name,by_id):
         pass
