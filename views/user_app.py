@@ -16,14 +16,16 @@ blue = Blueprint("userblue",__name__)
 def send_msg(): # 发送短信验证码
     u_phone = request.args.get('u_phone')
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-    send_sms_code(u_phone, code)
-    try:
-        r.setex('msg'+u_phone,code,120)  # 保存到redis缓存
-    except Exception as e:
-        api_logger.error(e)
-        return jsonify({'code':802,'msg':'短信验证码保存失败'})
-    api_logger.info('发送手机号：%s，短信验证码为：%s'%(u_phone,code))
-    return jsonify({'code':200,'msg':'短信验证码发送成功！'})
+    res = eval(send_sms_code(u_phone, code).decode())
+    if res['Code'] == 'OK':
+        try:
+            r.setex('msg'+u_phone,code,120)  # 保存到redis缓存
+        except Exception as e:
+            api_logger.error(e)
+            return jsonify({'code':802,'msg':'短信验证码保存失败'})
+        api_logger.info('发送手机号：%s，短信验证码为：%s'%(u_phone,code))
+        return jsonify({'code':200,'msg':'短信验证码发送成功！'})
+    return jsonify({'code':303,'msg':'请输入正确的手机号码'})
 
 
 @blue.route('/regist/',methods=['POST'])
@@ -36,10 +38,10 @@ def regist():
         return jsonify({'code':201,'msg':'参数不全！'})
     # 验证手机号在数据库中是否存在
     udao = UserDao()
-    print(udao.check_login_phone(u_phone),'=====')
     if not udao.check_login_phone(u_phone):
         # 短信验证
-        if check_sms(u_phone,msg_code):
+        res = check_sms(u_phone, msg_code)
+        if not res:
             now_time = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
             user_data = {'u_phone':u_phone,'u_auth_string':u_auth_string,
                          'u_pname':'EDU'+u_phone,'is_active':True,
@@ -49,6 +51,7 @@ def regist():
                 return jsonify({'code': 200, 'msg': 'ok'})
             else:
                 return jsonify({'code': 300,'msg': '插入数据失败, 可能存在某一些字段没有给定值'})
+        return jsonify(res)
     else:
         return jsonify({
         'code': 205,

@@ -46,7 +46,7 @@ class BaseDao():
         success = False
         with self.db as c:
             c.execute(sql,args=values)
-            api_logger.info('replace %s ok!' % sql)
+            api_logger.info('%s ok!' % sql)
             success = True
         return success
 
@@ -55,12 +55,16 @@ class BaseDao():
 
     def list(self,table_name,*fileds,
              where=None,args=None,page=1,page_size=20):
-        sql = "select {} from {} where {}={} limit {},{}".format\
-            (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
+        if not where:
+            sql = "select {} from {} limit {},{}".format\
+                (','.join(*fileds),table_name,(page-1)*page_size,page_size)
+        else:
+            sql = "select {} from {} where {}={} limit {},{}".format\
+                (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
         with self.db as c:
             c.execute(sql)
             result = c.fetchall()
-            api_logger.info('select %s ok!' % sql)
+            api_logger.info('%s ok!' % sql)
             return result
 
     def count(self,table_name):
