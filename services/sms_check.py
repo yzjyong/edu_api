@@ -5,7 +5,7 @@ from logger import api_logger
 
 
 def check_sms(u_phone,msg_code):
-    res = {}
+    res = None
     try:
         r_msg_code = r.get('msg' + u_phone)
     except Exception as e:
