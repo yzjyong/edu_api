@@ -1,7 +1,7 @@
 import uuid
 
 from flask import Blueprint, request,jsonify
-from libs import r
+from libs.cache_ import *
 from dao.cart_dao import CartDao
 from logger import api_logger
 
@@ -12,7 +12,7 @@ def add_cart_view():
     token = request.args.get("token")
     c_id = request.args.get("cid")
     # 验证是否登录
-    u_id = r.get(token).decode()
+    u_id = get_token_user_id(token)
     print(u_id)
     if u_id:
         add_cart = CartDao()
@@ -33,7 +33,7 @@ def add_cart_view():
 def cart_view():
     #验证当前用户是否登录
     token = request.args.get("token")
-    u_id= r.get(token).decode()
+    u_id = get_token_user_id(token)
     #通过用户id查询当前用户的购物车记录,及课程信息
     if u_id:
         print(u_id)
