@@ -1,11 +1,8 @@
 import random
-from datetime import datetime
 from flask import Blueprint, request,jsonify
-from libs import r
+from libs import r,cache_
 from dao.phone_dao import PhoneDao
 from dao.user_dao import UserDao
-from libs import cache_
-from libs.crypt import make_password
 from logger import api_logger
 from libs.sms import send_sms_code
 
@@ -55,17 +52,15 @@ def msglogin():
         if udao.check_login_phone(u_phone):
             try:
                 # 验证密码是否正确
-                login_user = udao.pwdlogin(u_phone,u_auth_string)
+                login_user = udao.pwdlogin(u_phone,u_auth_string)[0]
                 if login_user.get('id'):
                     token = cache_.new_token()
                     cache_.save_token(token,login_user.get('id'))
-                    udao.user_update('is_active', True, 'u_phone', u_phone)
-                    udao.user_update('is_delete', True, 'False', u_phone)
+                    udao.user_update('is_active', 1, 'u_phone', u_phone)
                     return jsonify({'code': 200,'token': token,'user_data': login_user})
-                else:
-                    return jsonify(login_user)
+                return jsonify(login_user)
             except Exception as e:
-                return jsonify({'code': 202,'msg': e})
+                return jsonify({'code': 202,'msg':str(e)})
         return jsonify({'code': 304,'msg':'该手机尚未注册'})
     else:
         return jsonify({
@@ -82,25 +77,14 @@ def msg_login():
     msg_code = resp.get('msg_code')
     if all((bool(u_phone),bool(msg_code))):
         udao = UserDao()
-        if udao.check_login_phone(u_phone):
-            login_user = udao.msglogin(u_phone,msg_code)
-            if login_user.get('id'):
-                token = cache_.new_token()
-                cache_.save_token(token, id)
-                udao.user_update('is_active', True, 'u_phone', u_phone)
-                udao.user_update('is_delete', True, 'False', u_phone)
-                # PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '登录'})
-                return jsonify({'code': 200,'token': token,'user_data': login_user})
-            return jsonify(login_user)
-        else:   # 如果用户名手机号码不存在，则直接新增用户
-            now_time = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
-            user_data = {'u_phone': u_phone,'u_pname': 'EDU' + u_phone,
-                         'u_create_time':now_time,'is_active':True,'is_delete':False}
-            if udao.save(**user_data):
-                # PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '注册'})
-                return jsonify({'code': 200, 'msg': 'ok'})
-            else:
-                return jsonify({'code': 300, 'msg': '插入数据失败, 可能存在某一些字段没有给定值'})
+        login_user = udao.msglogin(u_phone, msg_code)
+        if login_user.get('id'):   # 验证码正确
+            token = cache_.new_token()
+            cache_.save_token(token, login_user.get('id'))
+            udao.user_update('is_active', 1, 'u_phone', u_phone)
+            # PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '登录'})
+            return jsonify({'code': 200, 'token': token, 'user_data': login_user})
+        return jsonify(login_user)
     else:
         return jsonify({
             'code': 101,
@@ -124,12 +108,11 @@ def forget_pwd():
                 token = cache_.new_token()
                 cache_.save_token(token, id)
                 udao.user_update('u_auth_string',u_auth_string, 'u_phone', u_phone)
-                udao.user_update('is_active', True, 'u_phone', u_phone)
-                udao.user_update('is_delete', True, 'False', u_phone)
+                udao.user_update('is_active',1, 'u_phone', u_phone)
                 # PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '找回密码'})
                 return jsonify({'code': 200, 'token': token, 'user_data': login_user})
             return jsonify(login_user)
-        else:   # 如果用户名手机号码不存在，提示
+        else:   # 手机号码不存在，提示
             return jsonify({'code': 300, 'msg': '请填写注册手机号'})
     else:
         return jsonify({
@@ -137,6 +120,21 @@ def forget_pwd():
             'msg': '请求参数u_phone,msg_code,u_auth_string必须存在'
         })
 
+# 退出登录
+@blue.route('/loginout/',methods=['GET'])
+def loginout():
+    api_logger.debug('user forget get action!')
+    token = request.args.get('token')
+    print(token)
+    try:
+        id = r.get(token).decode()
+        print(r.get(token))
+        r.delete(token)
+        UserDao().user_update('is_active', 0, 'id', id)
+        return jsonify({'code':200,'msg':'退出成功！'})
+    except Exception as e:
+        return jsonify({'code':202,'msg':str(e)})
+
 
 if __name__ == '__main__':
-    r.setex('msg' + '18729541662', '135525',3600)
+    print(r.get('f48553a82cea428ca5a48660317bc2c2'))

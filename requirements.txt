@@ -1,6 +1,8 @@
 aliyun-python-sdk-core==2.13.5
 blinker==1.4
 blueprint==3.4.2
+certifi==2019.6.16
+chardet==3.0.4
 Click==7.0
 Flask==1.0.3
 Flask-Cors==3.0.8
@@ -13,5 +15,7 @@ MarkupSafe==1.1.1
 Pillow==6.0.0
 PyMySQL==0.9.3
 redis==2.10.6
+requests==2.22.0
 six==1.12.0
+urllib3==1.25.3
 Werkzeug==0.15.4

@@ -73,6 +73,7 @@ class BaseDao():
         else:
             sql = "select {} from {} where {}={} limit {},{}".format\
                 (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
+        print(sql)
         with self.db as c:
             c.execute(sql)
             result = c.fetchall()
@@ -91,6 +92,4 @@ class BaseDao():
         return data
 
 if __name__ == '__main__':
-    # user_data = {'u_phone': 18729541663,'is_active': True,'is_delete': False,'u_pname':'wx','note':'1213'}
-    # print(BaseDao().save('users', **user_data))
-    print(BaseDao().update('users','u_auth_string','66bdfc2356d645deae67ff42993aa49d','u_phone','18729541663'))
+    print(BaseDao().list('teachers','*'))

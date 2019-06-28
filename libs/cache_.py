@@ -18,4 +18,4 @@ def get_token_user_id(token):
 
 
 if __name__ == '__main__':
-    print(new_token())
+    r.delete()
