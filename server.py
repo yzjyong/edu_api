@@ -1,7 +1,7 @@
 from apps import app
 from flask_cors import CORS
-from views.free_course_view import free_blue
-from views.mine_view import mine_blue
+from views.free_course_app import free_blue
+from views.mine_app import mine_blue
 from views import user_app,cart_app,details_app
 
 
