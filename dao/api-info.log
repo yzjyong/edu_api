@@ -1,0 +1,12 @@
+[2019-06-28 00:44:23 at 30 line of __init__.py ] (1054, "Unknown column 'i' in 'field list'")
+[2019-06-28 00:45:11 at 30 line of __init__.py ] (1054, "Unknown column 'i' in 'field list'")
+[2019-06-28 00:46:08 at 30 line of __init__.py ] (1054, "Unknown column 'i' in 'field list'")
+[2019-06-28 00:47:32 at 30 line of __init__.py ] (1054, "Unknown column 'i' in 'field list'")
+[2019-06-28 00:50:59 at 30 line of __init__.py ] (1054, "Unknown column 'i' in 'field list'")
+[2019-06-28 00:51:50 at 30 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '[{'id': 1}]' at line 1")
+[2019-06-28 00:52:59 at 30 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '[{'id': 1}]' at line 1")
+[2019-06-28 01:00:18 at 79 line of __init__.py ] select course_id,name,img_url,is_free,degree,study_num from courses limit 0,20 ok!
+[2019-06-28 01:00:42 at 79 line of __init__.py ] select course_id,name,img_url,is_free,degree,study_num from courses limit 0,20 ok!
+[2019-06-28 01:01:02 at 79 line of __init__.py ] select course_id,name,img_url,is_free,degree,study_num from courses limit 0,20 ok!
+[2019-06-28 01:02:41 at 79 line of __init__.py ] select course_id,name,img_url,is_free,degree,study_num from courses where is_free=True limit 0,20 ok!
+[2019-06-28 01:07:19 at 79 line of __init__.py ] select course_id,name,img_url,is_free,degree,study_num from courses where is_free=True limit 0,20 ok!
