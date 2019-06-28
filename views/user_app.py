@@ -12,7 +12,8 @@ blue = Blueprint("userblue",__name__)
 # 发送短信验证码
 @blue.route('/msgcode/',methods=['POST'])
 def send_msg():
-    u_phone = request.args.get('u_phone')
+    resp = eval(request.get_data().decode())
+    u_phone = resp.get('phone')
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     res = eval(send_sms_code(u_phone, code).decode())
     if res['Code'] == 'OK':
@@ -28,7 +29,7 @@ def send_msg():
 # 检查手机号码
 @blue.route('/checkphone/',methods=['GET'])
 def check_phone():
-    u_phone = request.args.get('u_phone')
+    u_phone = request.args.get('phone')
     result = {
         'code': 200,
         'msg': '手机号不存在'
@@ -44,8 +45,8 @@ def check_phone():
 def msglogin():
     api_logger.debug('user phone_login get action!')
     resp = eval(request.get_data().decode())
-    u_phone = resp.get('u_phone')
-    u_auth_string = resp.get('u_auth_string')
+    u_phone = resp.get('phone')
+    u_auth_string = resp.get('auth_string')
     if all((bool(u_phone),bool(u_auth_string))):
         udao = UserDao()
         # 验证手机号在数据库中是否存在
@@ -73,11 +74,12 @@ def msglogin():
 def msg_login():
     api_logger.debug('user phone_login get action!')
     resp = eval(request.get_data().decode())
-    u_phone = resp.get('u_phone')
-    msg_code = resp.get('msg_code')
+    u_phone = resp.get('phone')
+    msg_code = resp.get('msg')
     if all((bool(u_phone),bool(msg_code))):
         udao = UserDao()
         login_user = udao.msglogin(u_phone, msg_code)
+        print(login_user.get('id'))
         if login_user.get('id'):   # 验证码正确
             token = cache_.new_token()
             cache_.save_token(token, login_user.get('id'))
@@ -96,9 +98,9 @@ def msg_login():
 def forget_pwd():
     api_logger.debug('user forget get action!')
     resp = eval(request.get_data().decode())
-    u_phone = resp.get('u_phone')
-    msg_code = resp.get('msg_code')
-    u_auth_string = resp.get('u_auth_string')
+    u_phone = resp.get('phone')
+    msg_code = resp.get('msg')
+    u_auth_string = resp.get('auth_string')
     if all((bool(u_phone), bool(msg_code),bool(u_auth_string))):
         udao = UserDao()
         # 验证手机号在数据库中是否存在
