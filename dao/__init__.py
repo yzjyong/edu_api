@@ -50,9 +50,9 @@ class BaseDao():
             success = True
         return success
 
-    def update(self, table_name, key, value, where=None, args=None):
+    def update(self, table_name, key,value, where=None, args=None):
         sql = "update {} set {}='{}' where {}='{}' ".format(
-            table_name, key, value, where, args
+            table_name, key,value, where, args
         )
         succuss = False
         with self.db as c:
@@ -91,7 +91,6 @@ class BaseDao():
         return data
 
 if __name__ == '__main__':
-    user_data = {'u_phone': 18729541663, 'u_auth_string': 'wx123456',
-                 'u_pname': 'EDU18729541663', 'is_active': True,
-                 'u_create_time': '2019-06-04', 'is_delete': False}
-    print(BaseDao().save('users', **user_data))
+    # user_data = {'u_phone': 18729541663,'is_active': True,'is_delete': False,'u_pname':'wx','note':'1213'}
+    # print(BaseDao().save('users', **user_data))
+    print(BaseDao().update('users','u_auth_string','66bdfc2356d645deae67ff42993aa49d','u_phone','18729541663'))
