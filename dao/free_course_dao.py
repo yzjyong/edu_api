@@ -27,7 +27,7 @@ class FreeCourseDao(BaseDao):
         courses_type = self.type_list('courses_type', ('course_id', 'name'))
         print(courses_type)
         courses_type_id = self.type_list('courses_type', ('id',), where='course_id', condition='=', args=1001)  # 获取默认大类id
-        courses_child_type = self.type_list('courses_child_type', ('course_child_id', 'name'), where='course_type_id',
+        courses_child_type = self.type_list('courses_child_type', ('course_child_id', 'name', 'img_url'), where='course_type_id',
                                             condition='=',args=courses_type_id[0]['id'])  # 查询小类信息
         print(courses_child_type)
         courses = self.list('courses', ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
@@ -63,6 +63,15 @@ class FreeCourseDao(BaseDao):
                 "type_message": type_message,
                 "course_message":course_message
             }
+
+    # def ajax_course_query(self, type_id, page):
+    #     if type_id.isdigit():
+    #         if page.isdigit():
+    #             type_id = int(type_id)
+    #             page = int(page)
+    #             courses_type = self.list('')
+    #             self.list('courses', ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
+    #                       where='', args=courses_type[0]['id'])
 
 # if __name__ == '__main__':
 #     FreeCourseDao().free_course_query()
