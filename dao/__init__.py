@@ -6,9 +6,9 @@ from logger import api_logger
 DB_CONFIG = {
     "host":"localhost",
     "port":3306,
-    "user":"eduadmin",
-    "password":"edu7654",
-    "db":"edu_api_db",
+    "user":"root",
+    "password":"15891402505li",
+    "db":"edu",
     "charset":"utf8"
 }
 
