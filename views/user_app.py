@@ -10,11 +10,13 @@ blue = Blueprint("userblue",__name__)
 
 
 # 发送短信验证码
-@blue.route('/msgcode/',methods=['POST'])
+@blue.route('/msgcode/',methods=['GET'])
 def send_msg():
-    resp = eval(request.get_data())
+    # resp = eval(request.get_data())
+    resp = request.args
     if resp:
         u_phone = resp.get('phone')
+        print(u_phone)
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])   # 随机生成验证码
         res = eval(send_sms_code(u_phone, code))
         if res['Code'] == 'OK':
