@@ -60,9 +60,9 @@ class FreeCourseDao(BaseDao):
                 type_message = self.type_list('courses_child_type', ('course_child_id', 'name', 'img_url'),
                                               where='course_type_id', condition='=', args=courses_type[0]['id'])
                 # 查询对应课程
-                courses_message = self.type_list('courses',
+                courses_message = self.list('courses',
                                                  ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
-                                                 where='course_type_id', condition='=', args=courses_type[0]['id'])
+                                                 where='course_type_id', args=courses_type[0]['id'], page_size=20)
 
                 # 返回对应小类及对应课程
                 return {
