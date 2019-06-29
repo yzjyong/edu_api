@@ -3,10 +3,10 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    "host": "localhost",
+    "host": "121.199.63.71",
     "port": 3306,
-    "user": "root",
-    "password": "15891402505li",
+    "user": "eduadmin",
+    "password": "edu7654",
     "db": "edu_api_db",
     "charset": "utf8"
 }

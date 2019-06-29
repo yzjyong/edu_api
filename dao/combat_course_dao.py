@@ -35,7 +35,47 @@ class CombatCourseDao(BaseDao):
             "courses": courses,
         }
 
+    def combat_course_type_query(self, type_id):
+        # 点击收费课程大类返回相应数据
+        # if type_id.isdigit():
+        #     type_id = int(type_id)
+        #     # 查大类是否存在
+        #     courses_type = self.type_list('courses_type', ('id',), where='course_id', condition='=', args=type_id)
+        #
+        #     if not courses_type:
+        #         # 没有查到大类
+        #         type_message = self.type_list('courses_child_type', ('id',), where='course_child_id',
+        #                                       condition='=', args=type_id)
+        #
+        #         if not type_message:
+        #             # 没有查到小类
+        #             return None
+        #         else:
+        #             courses_message = self.type_list('courses',
+        #                                              ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
+        #                                              where='course_child_type_id', condition='=',
+        #                                              args=type_message[0]['id'])
+        #             return {
+        #                 "courses_message": courses_message
+        #             }
+        #     else:
+        #         # 查询小类
+        #         type_message = self.type_list('courses_child_type', ('course_child_id', 'name', 'img_url'),
+        #                                       where='course_type_id', condition='=', args=courses_type[0]['id'])
+        #         # 查询对应课程
+        #         courses_message = self.list('courses',
+        #                                     ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
+        #                                     where='course_type_id', args=courses_type[0]['id'], page_size=20)
+        #
+        #         # 返回对应小类及对应课程
+        #         return {
+        #             "type_message": type_message,
+        #             "courses_message": courses_message
+        #         }
+        pass
+
     def course_list_query(self, page):
+        # ajax请求
         if page.isdigit():
             page = int(page)
             courses = self.list('courses', ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num', 'price'),

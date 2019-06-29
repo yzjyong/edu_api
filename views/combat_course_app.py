@@ -8,7 +8,11 @@ combat_blue = Blueprint("combat_blue", __name__)
 @combat_blue.route("/course/combat/list/", methods=["GET"])
 def combat_course_view():
     dao = CombatCourseDao()
-    data = dao.combat_course_query()
+    type_id = request.args.get('c')
+    if type_id is None:
+        data = dao.combat_course_query()
+    else:
+        data = dao.combat_course_type_query(type_id)
     if data:
         return jsonify({
             'code': 200,
