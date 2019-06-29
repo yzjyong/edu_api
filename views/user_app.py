@@ -1,4 +1,6 @@
 import random
+from datetime import datetime
+
 from flask import Blueprint, request,jsonify
 from libs import r,cache_
 from dao.phone_dao import PhoneDao
@@ -15,7 +17,6 @@ def send_msg():
     resp = eval(request.get_data())
     if resp:
         u_phone = resp.get('phone')
-        print(u_phone)
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])   # 随机生成验证码
         res = eval(send_sms_code(u_phone, code))
         print(res)
@@ -91,7 +92,8 @@ def msg_login():
                 token = cache_.new_token()
                 cache_.save_token(token, login_user.get('id'))
                 udao.user_update('is_active', 1, 'u_phone', u_phone)
-                PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '登录'})
+                send_time = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
+                PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '登录','send_time':send_time})
                 return jsonify({'code': 200, 'token': token, 'user_data': login_user})
             return jsonify(login_user)
         else:
@@ -120,7 +122,8 @@ def forgot_pwd():
                     cache_.save_token(token, id)
                     udao.user_update('u_auth_string',u_auth_string, 'u_phone', u_phone) # 更新密码
                     udao.user_update('is_active',1, 'u_phone', u_phone) # 更新状态
-                    PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '找回密码'})  # 保存验证信息
+                    send_time = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
+                    PhoneDao().save(**{'phone': u_phone, 'code': msg_code, 'send_type': '登录', 'send_time': send_time})
                     return jsonify({'code': 200, 'token': token, 'user_data': login_user})
                 return jsonify(login_user)
             else:   # 手机号码不存在，提示

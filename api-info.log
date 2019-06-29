@@ -22,3 +22,11 @@
 [2019-06-29 17:06:48 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
 [2019-06-29 17:06:48 at 8 line of phone_dao.py ] db replace users:<18729541661>
 [2019-06-29 17:06:48 at 29 line of __init__.py ] (1364, "Field 'send_time' doesn't have a default value")
+[2019-06-29 17:25:20 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:25:21 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:25:21 at 8 line of phone_dao.py ] db update users:<18729541661>
+[2019-06-29 17:25:21 at 29 line of __init__.py ] (1364, "Field 'send_time' doesn't have a default value")
+[2019-06-29 17:39:26 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:39:26 at 71 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:39:26 at 8 line of phone_dao.py ] db update users:<18729541661>
+[2019-06-29 17:39:26 at 49 line of __init__.py ] insert into phone_records(phone,code,send_type,send_time) values(%(phone)s,%(code)s,%(send_type)s,%(send_time)s) ok!
