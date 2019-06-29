@@ -4,7 +4,7 @@ from logger import api_logger
 
 
 DB_CONFIG = {
-    "host":"121.199.63.71",
+    "host":"localhost",
     "port":3306,
     "user":"eduadmin",
     "password":"edu7654",
@@ -20,7 +20,6 @@ class DB:
     def __enter__(self):
         if self.conn is None:
             self.conn = pymysql.Connect(**DB_CONFIG)
-
         return self.conn.cursor(cursor=DictCursor)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -29,7 +28,6 @@ class DB:
         else:
             api_logger.error(exc_val)
             self.conn.rollback()
-
         return True # 异常不会继续向外抛出
 
 
@@ -37,6 +35,7 @@ class BaseDao():
     def __init__(self):
         self.db = DB()
 
+    # 增
     def save(self,table_name,**values):
         sql = 'insert into %s(%s) values(%s)' % \
               (table_name,
@@ -50,27 +49,34 @@ class BaseDao():
             success = True
         return success
 
+    # 删
+    def delete(self, table_name, where=None, args=None):
+        sql = "delete from {} where {}='{}'".format(table_name, where, args)
+        success = False
+        with self.db as c:
+            c.execute(sql)
+            api_logger.info('%s ok!' % sql)
+            success = True
+        return success
+
+    # 改
     def update(self, table_name, key,value, where=None, args=None):
         sql = "update {} set {}='{}' where {}='{}' ".format(
             table_name, key,value, where, args
         )
         succuss = False
         with self.db as c:
-            print(sql)
             c.execute(sql)
             api_logger.info('%s ok!' % sql)
             succuss = True
         return succuss
 
-    def delete(self,table_name,by_id):
-        pass
-
-    def list(self,table_name,*fileds,
-             where=None,args=None,page=1,page_size=20):
-        if not where:
+    # 查
+    def list(self,table_name,*fileds,where=None,args=None,page=1,page_size=20):
+        if not where: # 无条件查询
             sql = "select {} from {} limit {},{}".format\
                 (','.join(*fileds),table_name,(page-1)*page_size,page_size)
-        else:
+        else:   # 条件查询
             sql = "select {} from {} where {}={} limit {},{}".format\
                 (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
         print(sql)
@@ -80,9 +86,7 @@ class BaseDao():
             api_logger.info('%s ok!' % sql)
             return result
 
-    def count(self,table_name):
-        pass
-
+    # sql语句执行
     def query(self,sql,*args):
         with self.db as c:
             c.execute(sql,args=args)
@@ -90,6 +94,10 @@ class BaseDao():
             if data:
                 data = list(data)
         return data
+
+    # 计数
+    def count(self,table_name):
+        pass
 
 if __name__ == '__main__':
     print(BaseDao().list('teachers','*'))
