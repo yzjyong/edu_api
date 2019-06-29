@@ -1,6 +1,5 @@
 import random
 from datetime import datetime
-
 from flask import Blueprint, request,jsonify
 from libs import r,cache_
 from dao.phone_dao import PhoneDao
@@ -15,11 +14,10 @@ blue = Blueprint("userblue",__name__)
 @blue.route('/msgcode/',methods=['POST'])
 def send_msg():
     resp = eval(request.get_data())
-    if resp:
+    if resp: # 验证接收数据
         u_phone = resp.get('phone')
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])   # 随机生成验证码
         res = eval(send_sms_code(u_phone, code))
-        print(res)
         if res['Code'] == 'OK':
             try:
                 r.setex('msg'+u_phone,code,120)  # 保存到redis缓存
@@ -28,6 +26,8 @@ def send_msg():
                 return jsonify({'code':802,'msg':'短信验证码保存失败'})
             api_logger.info('发送手机号：%s，短信验证码为：%s'%(u_phone,code))
             return jsonify({'code':200,'msg':'短信验证码发送成功！'})
+        if res['Code'] == 'isv.BUSINESS_LIMIT_CONTROL':
+            return jsonify({'code':303,'msg':'频繁验证，请稍后再试'})
         return jsonify({'code':303,'msg':'请输入正确的手机号码'})
     return jsonify({'code':304,'msg':'传入数据为空'})
 
@@ -142,13 +142,10 @@ def loginout():
     resp = eval(request.get_data())
     if resp:
         token = resp.get('token')
-        try:
-            id = cache_.get_token_user_id(token)    # 从redis中获取id
-            r.delete(token) # 删除服务端token
-            UserDao().user_update('is_active', 0, 'id', id) # 更改激活状态为0
-            return jsonify({'code':200,'msg':'退出成功！'})
-        except Exception as e:
-            return jsonify({'code':202,'msg':str(e)})
+        id = cache_.get_token_user_id(token)    # 从redis中获取id
+        r.delete(token) # 删除服务端token
+        UserDao().user_update('is_active', 0, 'id', id) # 更改激活状态为0
+        return jsonify({'code':200,'msg':'退出成功！'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
 
 
