@@ -35,6 +35,17 @@ class CombatCourseDao(BaseDao):
             "courses": courses,
         }
 
+    def course_list_query(self, page):
+        if page.isdigit():
+            page = int(page)
+            courses = self.list('courses', ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num', 'price'),
+                                where='is_free', args=False, page=page)  # 查询大类对应课程
+            print("courses", courses)
+            return {
+                "courses": courses
+            }
+        else:
+            return None
 
-if __name__ == '__main__':
-    CombatCourseDao().combat_course_query()
+# if __name__ == '__main__':
+#     CombatCourseDao().course_list_query('2')
