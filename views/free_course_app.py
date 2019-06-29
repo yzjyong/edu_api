@@ -5,7 +5,7 @@ from dao.free_course_dao import FreeCourseDao
 free_blue = Blueprint("free_blue", __name__)
 
 
-@free_blue.route("/course/list/", methods=["GET", "POST"])
+@free_blue.route("/course/list/", methods=["GET"])
 def free_course_view():
     dao = FreeCourseDao()
     type_id = request.args.get("c", None)
@@ -36,11 +36,11 @@ def free_course_view():
         })
 
 
-@free_blue.route("/course/listajax/", methods=["GET", "POST"])
+@free_blue.route("/course/listajax/", methods=["GET"])
 def ajax_course_view():
     dao = FreeCourseDao()
-    type_id = request.args.get("c", 1001)
-    page = request.args.get("page", 1)
+    type_id = request.args.get("c", '1001')
+    page = request.args.get("page", '1')
     data = dao.ajax_course_query(type_id, page)
     if data:
         return jsonify({
