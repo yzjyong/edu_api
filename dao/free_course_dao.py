@@ -23,7 +23,7 @@ class FreeCourseDao(BaseDao):
                                             condition='=', args=courses_type_id[0]['id'])  # 查询小类信息
         print(courses_child_type)
         courses = self.list('courses', ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
-                            where='is_free', args=True)  # 查询大类对应课程
+                            where='is_free', args=True, page_size=20)  # 查询大类对应课程
         print(courses)
 
         return {
@@ -48,9 +48,10 @@ class FreeCourseDao(BaseDao):
                     # 没有查到小类
                     return None
                 else:
-                    courses_message = self.list('courses',
-                                                ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
-                                                where='course_child_type_id', args=type_message[0]['id'])
+                    courses_message = self.type_list('courses',
+                                                     ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
+                                                     where='course_child_type_id', condition='=',
+                                                     args=type_message[0]['id'])
                     return {
                         "courses_message": courses_message
                     }
@@ -59,9 +60,9 @@ class FreeCourseDao(BaseDao):
                 type_message = self.type_list('courses_child_type', ('course_child_id', 'name', 'img_url'),
                                               where='course_type_id', condition='=', args=courses_type[0]['id'])
                 # 查询对应课程
-                courses_message = self.list('courses',
-                                            ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
-                                            where='course_type_id', args=courses_type[0]['id'])
+                courses_message = self.type_list('courses',
+                                                 ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
+                                                 where='course_type_id', condition='=', args=courses_type[0]['id'])
 
                 # 返回对应小类及对应课程
                 return {
