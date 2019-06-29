@@ -1,0 +1,24 @@
+[2019-06-29 16:09:58 at 28 line of user_app.py ] 发送手机号：18729541661，短信验证码为：685671
+[2019-06-29 16:28:24 at 28 line of user_app.py ] 发送手机号：18729541661，短信验证码为：978927
+[2019-06-29 16:53:30 at 46 line of user_dao.py ] 用户 18729541661 的口令不正确
+[2019-06-29 16:57:04 at 22 line of user_dao.py ] db update users
+[2019-06-29 16:57:04 at 70 line of __init__.py ] update users set u_auth_string='29dd605e6a5afde36955d453ef1a0737' where u_phone='18729541661'  ok!
+[2019-06-29 16:57:05 at 22 line of user_dao.py ] db update users
+[2019-06-29 16:57:05 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:01:56 at 28 line of user_app.py ] 发送手机号：18729541661，短信验证码为：691041
+[2019-06-29 17:02:34 at 28 line of user_app.py ] 发送手机号：18729541661，短信验证码为：760054
+[2019-06-29 17:02:58 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:02:58 at 70 line of __init__.py ] update users set u_auth_string='29dd605e6a5afde36955d453ef1a0737' where u_phone='18729541661'  ok!
+[2019-06-29 17:02:58 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:02:58 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:04:00 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:04:00 at 70 line of __init__.py ] update users set u_auth_string='29dd605e6a5afde36955d453ef1a0737' where u_phone='18729541661'  ok!
+[2019-06-29 17:04:00 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:04:00 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:06:15 at 28 line of user_app.py ] 发送手机号：18729541661，短信验证码为：421987
+[2019-06-29 17:06:47 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:06:47 at 70 line of __init__.py ] update users set u_auth_string='29dd605e6a5afde36955d453ef1a0737' where u_phone='18729541661'  ok!
+[2019-06-29 17:06:47 at 22 line of user_dao.py ] db update users
+[2019-06-29 17:06:48 at 70 line of __init__.py ] update users set is_active='1' where u_phone='18729541661'  ok!
+[2019-06-29 17:06:48 at 8 line of phone_dao.py ] db replace users:<18729541661>
+[2019-06-29 17:06:48 at 29 line of __init__.py ] (1364, "Field 'send_time' doesn't have a default value")

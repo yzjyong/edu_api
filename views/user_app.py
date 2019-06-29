@@ -10,15 +10,15 @@ blue = Blueprint("userblue",__name__)
 
 
 # 发送短信验证码
-@blue.route('/msgcode/',methods=['GET'])
+@blue.route('/msgcode/',methods=['POST'])
 def send_msg():
-    # resp = eval(request.get_data())
-    resp = request.args
+    resp = eval(request.get_data())
     if resp:
         u_phone = resp.get('phone')
         print(u_phone)
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])   # 随机生成验证码
         res = eval(send_sms_code(u_phone, code))
+        print(res)
         if res['Code'] == 'OK':
             try:
                 r.setex('msg'+u_phone,code,120)  # 保存到redis缓存
@@ -103,7 +103,7 @@ def msg_login():
 
 # 忘记密码
 @blue.route('/forgot/',methods=['POST'])
-def forget_pwd():
+def forgot_pwd():
     api_logger.debug('user forget get action!')
     resp = eval(request.get_data())
     if resp:
