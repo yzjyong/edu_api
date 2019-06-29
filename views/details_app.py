@@ -3,7 +3,7 @@ from dao.details_dao import DetailsDao
 
 blue = Blueprint('detailblue',__name__)
 
-# 介绍页
+# 免费介绍页
 @blue.route('/learn/',methods=['GET'])
 def course_learn():
     resp = request.get_data()
@@ -16,7 +16,7 @@ def course_learn():
         return jsonify({'code':202,'msg':'该课程不存在'})
     return jsonify({'code':202,'msg':'路由不合法'})
 
-# 详情页
+# 免费详情页
 @blue.route('/learn/chapter/',methods=['GET'])
 def course_chapter():
     resp = request.get_data()
@@ -28,6 +28,8 @@ def course_chapter():
             return jsonify(data)
         return jsonify({'code': 202, 'msg': '该课程不存在'})
     return jsonify({'code': 202, 'msg': '路由不合法'})
+
+# 付费介绍页
 
 
 if __name__ == '__main__':
