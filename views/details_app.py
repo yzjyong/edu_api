@@ -29,7 +29,7 @@ def course_chapter():
         return jsonify({'code': 202, 'msg': '该课程不存在'})
     return jsonify({'code': 202, 'msg': '路由不合法'})
 
-# 付费介绍页
+# 付费详情页
 
 
 if __name__ == '__main__':

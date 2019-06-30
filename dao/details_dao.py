@@ -10,7 +10,7 @@ class DetailsDao(BaseDao):
         courseinfo = self.c_list('*','course_id',course_id)  # 获取详情页顶部信息，图片，类名，title
         return courseinfo
 
-    def c_presentation(self,course): # 介绍页
+    def c_presentation(self,course): # 免费介绍页
         clist = ['id', 'name', 'course_type_id', 'course_child_type_id', 'img_url','description',
                  'degree', 'course_time', 'study_num', 'course_score','youneed_know', 'teacher_tell',
                  'teacher_id']
@@ -19,14 +19,19 @@ class DetailsDao(BaseDao):
                                     where='id',args=precourse['teacher_id'])[0]
         return {'precourse':precourse,'t_info':t_info}
 
-    def c_lesson(self,c_id): # 章节页
+    def c_lesson(self,c_id): # 免费章节页
         lesson = self.list('lessons',('id','name'),where='course_id',args=c_id)
         videos = self.list('videos',('name','video_url','lesson_id'),where='course_id',args=c_id)
         data = []
-        for i in lesson:
+        for i in lesson: # 对返回数据做组装，将lesson对应的video组装在一起
             i['videos'] = [j for j in videos if j['lesson_id'] == i['id']]
             data.append(i)
         return data
+
+    def detail_page(self):
+        pass
+
+
 
 
 if __name__ == '__main__':

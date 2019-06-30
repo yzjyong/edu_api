@@ -71,9 +71,6 @@ class BaseDao():
             succuss = True
         return succuss
 
-    def delete(self, table_name, by_id):
-        pass
-
     # 查
     def list(self, table_name, *fileds, where=None, args=None, page=1, page_size=20):
         if not where:  # 无条件查询
