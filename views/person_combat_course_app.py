@@ -6,7 +6,7 @@ blue = Blueprint('person_blue',__name__)
 
 @blue.route('/percombat/',methods=['GET'])
 def person_combat():    # 全部实战
-    resp = request.get_data()
+    resp = eval(request.get_data())
     if resp:
         token = resp.get('token')
         status = resp.get('status')
