@@ -6,13 +6,19 @@ class CombatCourseDao(BaseDao):
         if not where:
             sql = "select {} from {}".format(','.join(*fileds), table_name)
         else:
-            sql = "select {} from {} where {}{}".format(','.join(*fileds), table_name, where, args)
+            sql = "select {} from {} where {}={}".format(','.join(*fileds), table_name, where, args)
         print(sql)
         return self.query(sql)
 
     def course_list(self, table_name, *fileds, where, args, how, arg, page=1, page_size=20):
         sql = "select {} from {} where {}={} and {}={} limit {}, {}" \
             .format(','.join(*fileds), table_name, where, args, how, arg, (page - 1) * page_size, page_size)
+        print(sql)
+        return self.query(sql)
+
+    def course_sort_list(self, table_name, *fileds, where, args, how, arg, field, sort='desc',  page=1, page_size=20):
+        sql = "select {} from {} where {}={} and {}={} order by {} {} limit {}, {}" \
+            .format(','.join(*fileds), table_name, where, args, how, arg, field, sort, (page - 1) * page_size, page_size)
         print(sql)
         return self.query(sql)
 
@@ -60,7 +66,7 @@ class CombatCourseDao(BaseDao):
                                                    ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num',
                                                     'price'),
                                                    where='course_type_id', args=courses_type[0]['id'], how='is_free',
-                                                   arg=True)
+                                                   arg=False)
 
                 # 返回对应小类及对应课程
                 return {
@@ -72,15 +78,56 @@ class CombatCourseDao(BaseDao):
         # ajax请求
         if page.isdigit():
             page = int(page)
-            courses = self.course_list('courses',
-                                       ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num', 'price'),
-                                       where='is_free', args=False, how='is_free', arg=False, page=page)  # 查询大类对应课程
+            courses = self.list('courses',
+                                ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num', 'price'),
+                                where='is_free', args=False, page=page)  # 查询大类对应课程
             print("courses", courses)
-            return {
-                "courses": courses
-            }
+            if courses:
+                return {
+                    "courses": courses
+                }
+            else:
+                return {
+                    "courses": "没有更多课程了"
+                }
         else:
             return None
 
+    def course_api_query(self, type_id, sort, page):
+        # ajax请求
+        if type_id.isdigit():
+            if sort.isdigit():
+                if page.isdigit():
+                    type_id = int(type_id)
+                    page = int(page)
+                    courses_type = self.type_list('courses_type', ('id',), where='course_id', args=type_id)
+                    print("courses_type", courses_type)
+                    if not courses_type:
+                        type_message = self.type_list('courses_child_type', ('id',), where='course_child_id', args=type_id)
+                        print("type_message", type_message)
+                        if not type_message:
+                            return None
+                        else:
+                            courses_message = self.course_sort_list('courses',
+                                                               ('course_id', 'name', 'img_url', 'is_free', 'degree',
+                                                                'study_num', 'price'),
+                                                               where='course_child_type_id', args=type_message[0]['id'],
+                                                               how='is_free', arg=False, field='add_time', page=page)
+                            print("courses_message", courses_message)
+                            if not courses_message:
+                                return "没有更多课程了"
+                    else:
+                        courses_message = self.course_sort_list('courses',
+                                                           ('course_id', 'name', 'img_url', 'is_free', 'degree',
+                                                            'study_num', 'price'),
+                                                           where='course_type_id', args=courses_type[0]['id'],
+                                                           how='is_free', arg=False, field='add_time', page=page)
+                    if not courses_message:
+                        # 没查到相关数据
+                        return "没有更多课程了"
+                    return {
+                        "courses_message": courses_message
+                    }
+        return None
 # if __name__ == '__main__':
 #     CombatCourseDao().course_list_query('2')

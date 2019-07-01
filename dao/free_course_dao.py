@@ -98,14 +98,16 @@ class FreeCourseDao(BaseDao):
                                                            where='course_child_type_id', args=type_message[0]['id'],
                                                            how='is_free', arg=True, page=page)
                         if not courses_message:
-                            return None
+                            return "没有更多课程了"
                 else:
-                    courses_message = self.list('courses',
-                                                ('course_id', 'name', 'img_url', 'is_free', 'degree', 'study_num'),
-                                                where='course_type_id', args=courses_type[0]['id'], page=page)
+                    courses_message = self.course_list('courses',
+                                                       ('course_id', 'name', 'img_url', 'is_free', 'degree',
+                                                        'study_num'),
+                                                       where='course_type_id', args=courses_type[0]['id'],
+                                                       how='is_free', arg=True, page=page)
                 if not courses_message:
                     # 没查到相关数据
-                    return None
+                    return "没有更多课程了"
                 return {
                     "courses_message": courses_message
                 }
