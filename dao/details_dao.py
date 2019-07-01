@@ -1,28 +1,38 @@
-# 详情
 from dao import BaseDao
 
 
+# 详情
 class DetailsDao(BaseDao):
+    def c_list(self,fileds,where,args):
+        return super(DetailsDao,self).list('courses',fileds,where=where,args=args)
 
-    def get_presentation(self,course_id):
-        courseinfo = self.list('courses',('id',''),where='course_id',args=course_id)[0] # 获取课程信息
-        course_score = self.list('courses_score',('course_score',),where='course_id',args=courseinfo['id'])
-        sql = 'select sum(learn_times) from videos where course_id=%s group by course_id'
-        course_time = self.query(sql,courseinfo['id'])[0]['sum(learn_times)']
-        if all((courseinfo,course_score,course_time)):
-            courseinfo['course_score'],courseinfo['course_time'] = course_score,course_time
-            return print(courseinfo)
-        return None
+    def c_info(self,course_id):  # 顶部信息
+        courseinfo = self.c_list('*','course_id',course_id)  # 获取详情页顶部信息，图片，类名，title
+        return courseinfo
 
-    def get_lesson(self,couse_id):
-        sql = 'select ls.lesson_id,ls.name from lessons as ls ' \
-            'join courses as cs on cs.id=ls.course_id where cs.course_id = %s'
-        lessoninfo = self.query(sql,couse_id)
-        if lessoninfo:
-            return lessoninfo[0]
+    def c_presentation(self,course): # 免费介绍页
+        clist = ['id', 'name', 'course_type_id', 'course_child_type_id', 'img_url','description',
+                 'degree', 'course_time', 'study_num', 'course_score','youneed_know', 'teacher_tell',
+                 'teacher_id']
+        precourse = {k:course[k] for k in clist}
+        t_info = BaseDao().list('teachers',('t_name','t_job','t_pic'),
+                                    where='id',args=precourse['teacher_id'])[0]
+        return {'precourse':precourse,'t_info':t_info}
 
-    def get_video(self,lesson_id):
-        sql = 'select '
+    def c_lesson(self,c_id): # 免费章节页
+        lesson = self.list('lessons',('id','name'),where='course_id',args=c_id)
+        videos = self.list('videos',('name','video_url','lesson_id'),where='course_id',args=c_id)
+        data = []
+        for i in lesson: # 对返回数据做组装，将lesson对应的video组装在一起
+            i['videos'] = [j for j in videos if j['lesson_id'] == i['id']]
+            data.append(i)
+        return data
+
+    def detail_page(self):
+        pass
+
+
+
 
 if __name__ == '__main__':
-    DetailsDao().get_course(10)
+    DetailsDao().c_lesson(50)

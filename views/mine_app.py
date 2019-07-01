@@ -5,7 +5,7 @@ from dao.mine_dao import MineDao
 mine_blue = Blueprint("mine_blue", __name__)
 
 
-@mine_blue.route("/mine/", methods=["GET", "POST"])
+@mine_blue.route("/mine/", methods=["GET"])
 def mine_view():
     dao = MineDao()
     data = dao.mine_query()
