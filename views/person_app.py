@@ -22,7 +22,7 @@ def personinfo():
             return jsonify({'code': 203, 'msg': '你还未登录！'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
 
-
+# 修改个人信息
 @blue.route('/change/')
 def changeinfo():
     resp = request.get_data()

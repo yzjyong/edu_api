@@ -11,8 +11,12 @@ def course_learn():
     if course_id.isdigit():
         courseinfo = DetailsDao().c_info(course_id)
         if courseinfo:
-            data = DetailsDao().c_presentation(courseinfo[0])
-            data['type'],data['child_type'] = DetailsDao().c_type(courseinfo[0]["course_type"])
+            data = DetailsDao().c_presentation(courseinfo[0])[0]
+            course_type_id = courseinfo[0]["course_type_id"]
+            child_type_id = courseinfo[0]['course_child_type_id']
+            print(course_type_id,child_type_id)
+            data['type'],data['child_type'] = DetailsDao().c_type(course_type_id,child_type_id)[0]
+            print(data['type'],data['child_type'])
             return jsonify(data)
         return jsonify({'code':202,'msg':'该课程不存在'})
     return jsonify({'code':202,'msg':'路由不合法'})
@@ -24,9 +28,13 @@ def course_chapter():
     course_id = eval(resp)['course_id'] if bool(resp) else ''
     if course_id.isdigit():
         courseinfo = DetailsDao().c_info(course_id)
+        print(courseinfo)
         if courseinfo:
+            print(courseinfo[0]['id'])
             data = DetailsDao().c_lesson(courseinfo[0]['id'])
-            data['type'], data['child_type'] = DetailsDao().c_type(courseinfo[0]["course_type"])
+            course_type_id = courseinfo[0]["course_type_id"]
+            child_type_id = courseinfo[0]['course_child_type_id']
+            data['type'], data['child_type'] = DetailsDao().c_type(course_type_id,child_type_id)
             return jsonify(data)
         return jsonify({'code': 202, 'msg': '该课程不存在'})
     return jsonify({'code': 202, 'msg': '路由不合法'})

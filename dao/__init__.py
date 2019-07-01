@@ -3,7 +3,7 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    "host": "localhost",
+    "host": "121.199.63.71",
     "port": 3306,
     "user": "eduadmin",
     "password": "edu7654",
@@ -74,25 +74,15 @@ class BaseDao():
             succuss = True
         return succuss
 
-
     # 查
-    def list(self, table_name, *fileds, where=None, args=None, page=1, page_size=20):
-        if not where:  # 无条件查询
-            sql = "select {} from {} limit {},{}".format \
-                (','.join(*fileds), table_name, (page - 1) * page_size, page_size)
-        else:  # 条件查询
-            sql = "select {} from {} where {}={} limit {},{}".format \
-                (','.join(*fileds), table_name, where, args, (page - 1) * page_size, page_size)
-        print(sql)
-
-    def list(self,table_name,*fileds,
+    def list(self,table_name,*fields,
              where=None,args=None,page=1,page_size=20):
         if not where:
             sql = "select {} from {} limit {},{}".format\
-                (','.join(*fileds),table_name,(page-1)*page_size,page_size)
+                (','.join(*fields),table_name,(page-1)*page_size,page_size)
         else:
             sql = "select {} from {} where {}={} limit {},{}".format\
-                (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
+                (','.join(*fields),table_name,where,args,(page-1)*page_size,page_size)
 
         with self.db as c:
             c.execute(sql)
