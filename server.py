@@ -6,8 +6,8 @@ from views import user_app, cart_app, details_app, mine_app, free_course_app, co
 
 
 APP_CONFIG={
-    'host': 'localhost',
-    'port': 8000,
+    'host': '0.0.0.0',
+    'port': 8004,
     'debug': True
 }
 
