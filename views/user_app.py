@@ -1,7 +1,8 @@
-import random
+import os,random,uuid
 from datetime import datetime
 from flask import Blueprint, request,jsonify
-from libs import r,cache_
+from werkzeug.datastructures import FileStorage
+from libs import r, cache_, oss
 from dao.phone_dao import PhoneDao
 from dao.user_dao import UserDao
 from logger import api_logger
@@ -147,6 +148,55 @@ def loginout():
         UserDao().user_update('is_active', 0, 'id', id) # 更改激活状态为0
         return jsonify({'code':200,'msg':'退出成功！'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
+
+# 上传头像到服务器
+@blue.route('/upload_avator/', methods=('POST',))
+def upload_avator():
+    # 上传的头像字段为 img
+    # 表单参数： token
+    file: FileStorage = request.files.get('img', None)
+    token = request.form.get('token', None)
+    if all((bool(file), bool(token))):
+        # 验证文件的类型, png/jpeg/jpg, 单张不能超过2M
+        # content-type: image/png, image/jpeg
+        print(file.content_length, 'bytes')
+        if file.content_type in ('image/png',
+                                 'image/jpeg'):
+            filename = uuid.uuid4().hex \
+                       + os.path.splitext(file.filename)[-1]
+            file.save(filename)
+
+            # 上传到oss云服务器上
+            key = oss.upload_file(filename)
+
+            os.remove(filename)  # 删除临时文件
+
+            # 将key写入到DB中
+            return jsonify({
+                'code': 200,
+                'msg': '上传文件成功',
+                'file_key': key
+            })
+        else:
+            return jsonify({
+                'code': 201,
+                'msg': '图片格式只支持png或jpeg'
+            })
+
+    return jsonify({
+        'code': 100,
+        'msg': 'POST请求参数必须有img和token'
+    })
+
+# 头像获取
+@blue.route('/img_url/<string:key>', methods=('GET', ))
+def get_img_url(key):
+    img_type = int(request.args.get('type', 0))
+
+    img_url = oss.get_url(key) if img_type == 0 else oss.get_small_url(key)
+    return jsonify({
+        'url': img_url
+    })
 
 
 if __name__ == '__main__':
