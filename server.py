@@ -4,7 +4,7 @@ from views import user_app, cart_app, details_app, mine_app, free_course_app, \
     combat_course_app, order_app, person_app, person_combat_course_app
 
 APP_CONFIG={
-    'host': 'localhost',
+    'host': '0.0.0.0',
     'port': 8004,
     'debug': True
 }
