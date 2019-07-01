@@ -9,7 +9,7 @@ cart_blue = Blueprint("cart_blue",__name__)
 
 @cart_blue.route("/add_cart/",methods=["GET",])   #还需传递参数token
 def add_cart_view():
-    token = request.args.get("token")
+    token = request.headers.get("token")
     c_id = request.args.get("cid")
     # 验证是否登录
     u_id = get_token_user_id(token)
@@ -22,8 +22,8 @@ def add_cart_view():
         if not bool(cart):
             #如果没有则创建一条购物车记录
             try:
-                print("cart",{"u_id":u_id,"c_id":c_id,"is_select":1})
-                state = add_cart.save("cart",**{"u_id":u_id,"c_id":c_id,"is_select":1})
+                print("cart",{"user_id":u_id,"course_id":c_id,"is_select":True})
+                state = add_cart.save("carts",**{"user_id":u_id,"course_id":c_id,"is_select":True})
                 print(state,"state")
                 if state:
                     result = {"code":200,'msg':"商品已添加至购物车！"}
@@ -40,10 +40,10 @@ def add_cart_view():
     result = {'code':202,'msg':'用户还未登录或注册'}
     return jsonify(result)
 
-@cart_blue.route("/ucenter/cart/",methods=["GET",])
+@cart_blue.route("/mycart/",methods=["GET",])
 def cart_view():
     #验证当前用户是否登录
-    token = request.args.get("token")
+    token = request.headers.get("token")
     u_id = get_token_user_id(token)
     #通过用户id查询当前用户的购物车记录,及课程信息
     if u_id:
@@ -52,7 +52,7 @@ def cart_view():
         try:
             course_info = cart_obj.get_cart_course(u_id)
             total_price = cart_obj.total(u_id)
-            result = {"code":200,"products":course_info,"total":total_price}
+            result = {"code":200,"checked":True,"products":course_info,"total":total_price}
         except Exception as e:
             api_logger.error("checkout course_info failed!,cause:%s" % e)
             result = {'code':201,'msg':e}
