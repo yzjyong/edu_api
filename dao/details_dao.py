@@ -3,16 +3,16 @@ from dao import BaseDao
 
 # 详情
 class DetailsDao(BaseDao):
-    def c_list(self,fileds,where,args):
-        return super(DetailsDao,self).list('courses',fileds,where=where,args=args)
+    def c_list(self,fields,where,args):
+        return super(DetailsDao,self).list('courses',fields,where=where,args=args)
 
     def c_info(self,course_id):  # 所有章节信息
         courseinfo = self.c_list('*','course_id',course_id)  # 获取详情页顶部信息，图片，类名，title
         return courseinfo
 
-    def c_type(self,type_id):  # 大类小类名称
-        c_type = self.list('courses_type','id','name',where='id',args=type_id)
-        c_child_type = self.list('courses_child_type','name',where='course_type',args=type_id)
+    def c_type(self,type_id,child_type_id):  # 大类小类名称
+        c_type = self.list('courses_type',('id','name'),where='id',args=type_id)
+        c_child_type = self.list('courses_child_type',('name',),where='id',args=child_type_id)
         return c_type,c_child_type
 
     def c_presentation(self,course): # 介绍页
@@ -25,8 +25,9 @@ class DetailsDao(BaseDao):
         return {'precourse':precourse,'t_info':t_info}
 
     def c_lesson(self,c_id): # 免费章节页
-        lesson = self.list('lessons',('id','name'),where='course_id',args=c_id)
+        lesson = self.list('chapters',('id','name'),where='course_id',args=c_id)
         videos = self.list('videos',('name','video_url','lesson_id'),where='course_id',args=c_id)
+        print(lesson,videos)
         data = []
         for i in lesson: # 对返回数据做组装，将lesson对应的video组装在一起
             i['videos'] = [j for j in videos if j['lesson_id'] == i['id']]
@@ -39,7 +40,7 @@ class DetailsDao(BaseDao):
         precourse = {k: course[k] for k in clist}
         detail_url = precourse.pop('detail_url').split("#") # 取出所有详情页中的url，并做组装
         precourse['detail_url'] = {i:detail_url[i] for i in range(len(detail_url))}
-        lesson = self.list('lessons', ('id', 'name'), where='course_id', args=precourse['id'])
+        lesson = self.list('chapters', ('id', 'name'), where='course_id', args=precourse['id'])
         videos = self.list('videos', ('name', 'video_url', 'lesson_id'), where='course_id', args=precourse['id'])
         if all((precourse,lesson,videos)):
             precourse['video_url'] = videos[0][0]['videos'][0]  # 取第一章第一个视频作为试看视频,插入详情字典
@@ -51,7 +52,6 @@ class DetailsDao(BaseDao):
             data = {'precourse':precourse,'lesson':lesson}
             return data
         return None
-
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    "host": "121.199.63.71",
+    "host": "localhost",
     "port": 3306,
     "user": "eduadmin",
     "password": "edu7654",
@@ -73,7 +73,6 @@ class BaseDao():
             api_logger.info('%s ok!' % sql)
             succuss = True
         return succuss
-
 
     # 查
     def list(self, table_name, *fileds, where=None, args=None, page=1, page_size=20):
