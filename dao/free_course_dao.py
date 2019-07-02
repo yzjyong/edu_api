@@ -4,17 +4,17 @@ from logger import api_logger
 
 class FreeCourseDao(BaseDao):
 
-    def type_list(self, table_name, *fileds, where=None, args=None):
+    def type_list(self, table_name, *fields, where=None, args=None):
         if not where:
-            sql = "select {} from {}".format(','.join(*fileds), table_name)
+            sql = "select {} from {}".format(','.join(*fields), table_name)
         else:
-            sql = "select {} from {} where {}={}".format(','.join(*fileds), table_name, where, args)
+            sql = "select {} from {} where {}={}".format(','.join(*fields), table_name, where, args)
         print(sql)
         return self.query(sql)
 
-    def course_list(self, table_name, *fileds, where, args, how, arg, page=1, page_size=20):
+    def course_list(self, table_name, *fields, where, args, how, arg, page=1, page_size=20):
         sql = "select {} from {} where {}={} and {}={} limit {}, {}" \
-            .format(','.join(*fileds), table_name, where, args, how, arg, (page - 1) * page_size, page_size)
+            .format(','.join(*fields), table_name, where, args, how, arg, (page - 1) * page_size, page_size)
         print(sql)
         return self.query(sql)
 

@@ -7,22 +7,22 @@ class CartDao(BaseDao):
         api_logger.info("carts of %s is ok~" % values["user_id"])
         return super(CartDao,self).save('carts',**values)
 
+    # 检查当前用户、当前课程的购物车记录
     def check_cart(self, uid, cid):
-        #检查当前用户、当前课程的购物车记录
         sql = "select user_id,course_id,is_select from carts where user_id= %s and course_id = %s "
-        cart = self.query(sql,*(uid,cid))
-        print(cart,"cart99999999",type(cart))
+        cart = self.query(sql, *(uid, cid))
+        print(cart, "cart99999999", type(cart))
         return cart
 
+    # 查询当前用户购物车中的课程信息
     def get_cart_course(self, uid):
-        #查询当前用户购物车中的课程信息
         sql = "select carts.is_select,courses.id,courses.name,courses.degree,courses.price,courses.img_url" \
               " from carts join courses on carts.course_id = courses.id where carts.user_id=%s"
         course_info = self.query(sql, uid)
         return course_info
 
+    # 计算当前用户购物车中被选中课程的总价格
     def total(self, uid):
-        #计算当前用户购物车中被选中课程的总价格
         course = self.get_cart_course(uid)
         total_price = 0
         for c in course:
@@ -31,7 +31,8 @@ class CartDao(BaseDao):
                 total_price += c.get("price")
         return total_price
 
-    def will_pay_course(self, cid, uid):  #通过参数商品id列表，查询商品信息
+    # 通过参数商品id列表，获取将要付款的课程信息
+    def will_pay_course(self, cid, uid):
         course_info = self.get_cart_course(uid)
         course_list = []
         total = 0
@@ -44,8 +45,8 @@ class CartDao(BaseDao):
                             total += course.get("price")
                             course_list.append(course)
                 return {
-                    "course_list":course_list,
-                    "total_price":total
+                    "course_list": course_list,
+                    "total_price": total
                 }
             elif len(cid) == 1:
                 for course in course_info:
@@ -57,6 +58,7 @@ class CartDao(BaseDao):
         except Exception as e:
             return {"code":201, "msg": e}
 
+    # 通过课程id和用户uid删除购物车记录
     def delete_user_cart_course(self, cid, uid):
         api_logger.info("%s have been delete", cid)
         sql = "delete from carts where course_id = %s and user_id=%s"
