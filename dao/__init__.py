@@ -76,23 +76,14 @@ class BaseDao():
 
 
     # 查
-    def list(self, table_name, *fileds, where=None, args=None, page=1, page_size=20):
-        if not where:  # 无条件查询
-            sql = "select {} from {} limit {},{}".format \
-                (','.join(*fileds), table_name, (page - 1) * page_size, page_size)
-        else:  # 条件查询
-            sql = "select {} from {} where {}={} limit {},{}".format \
-                (','.join(*fileds), table_name, where, args, (page - 1) * page_size, page_size)
-        print(sql)
-
-    def list(self,table_name,*fileds,
+    def list(self,table_name,*fields,
              where=None,args=None,page=1,page_size=20):
         if not where:
             sql = "select {} from {} limit {},{}".format\
-                (','.join(*fileds),table_name,(page-1)*page_size,page_size)
+                (','.join(*fields),table_name,(page-1)*page_size,page_size)
         else:
             sql = "select {} from {} where {}={} limit {},{}".format\
-                (','.join(*fileds),table_name,where,args,(page-1)*page_size,page_size)
+                (','.join(*fields),table_name,where,args,(page-1)*page_size,page_size)
 
         with self.db as c:
             c.execute(sql)
@@ -110,15 +101,15 @@ class BaseDao():
         return data
 
     # 计数
-    def count(self, first_table_name, *fileds, arg, alias, second_table_name=None, b_con=None, a_con=None,
+    def count(self, first_table_name, *fields, arg, alias, second_table_name=None, b_con=None, a_con=None,
               b_arg=None,
               a_arg=None, args):
         if not second_table_name:
             sql = "select {}, count({}) as {} from {} group by {}".format \
-                (','.join(*fileds), arg, alias, first_table_name, args)
+                (','.join(*fields), arg, alias, first_table_name, args)
         else:
             sql = "select {}, count({}) as {} from {} join {} on {}={} and {}={} group by {}".format \
-                (','.join(*fileds), arg, alias, first_table_name, second_table_name, b_con, a_con, b_arg, a_arg,
+                (','.join(*fields), arg, alias, first_table_name, second_table_name, b_con, a_con, b_arg, a_arg,
                  args)
         with self.db as c:
             c.execute(sql)
