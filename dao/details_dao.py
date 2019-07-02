@@ -24,13 +24,12 @@ class DetailsDao(BaseDao):
                                     where='id',args=precourse['teacher_id'])[0]
         return {'precourse':precourse,'t_info':t_info}
 
-    def c_lesson(self,c_id): # 免费章节页
-        lesson = self.list('chapters',('id','name'),where='course_id',args=c_id)
-        videos = self.list('videos',('name','video_url','lesson_id'),where='course_id',args=c_id)
-        print(lesson,videos)
+    def c_chapters(self,c_id): # 免费章节页
+        chapters = self.list('chapters',('id','name'),where='course_id',args=c_id)
+        videos = self.list('videos',('name','video_url','chapter_id'),where='course_id',args=c_id,page_size=200)
         data = []
-        for i in lesson: # 对返回数据做组装，将lesson对应的video组装在一起
-            i['videos'] = [j for j in videos if j['lesson_id'] == i['id']]
+        for i in chapters: # 对返回数据做组装，将chapters对应的video组装在一起
+            i['videos'] = [j for j in videos if j['chapter_id'] == i['id']]
             data.append(i)
         return data
 
@@ -40,21 +39,21 @@ class DetailsDao(BaseDao):
         precourse = {k: course[k] for k in clist}
         detail_url = precourse.pop('detail_url').split("#") # 取出所有详情页中的url，并做组装
         precourse['detail_url'] = {i:detail_url[i] for i in range(len(detail_url))}
-        lesson = self.list('chapters', ('id', 'name'), where='course_id', args=precourse['id'])
-        videos = self.list('videos', ('name', 'video_url', 'lesson_id'), where='course_id', args=precourse['id'])
-        if all((precourse,lesson,videos)):
+        chapters = self.list('chapters', ('id', 'name'), where='course_id', args=precourse['id'])
+        videos = self.list('videos', ('name', 'video_url', 'chapter_id'), where='course_id', args=precourse['id'])
+        if all((precourse,chapters,videos)):
             precourse['video_url'] = videos[0][0]['videos'][0]  # 取第一章第一个视频作为试看视频,插入详情字典
             del videos['video_url'] # 删除videos中的video_url字段
-            lesson = []
-            for i in lesson:  # 对返回数据做组装，将lesson对应的video组装在一起
-                i['videos'] = [j.re for j in videos if j['lesson_id'] == i['id']]
-                lesson.append(i)
-            data = {'precourse':precourse,'lesson':lesson}
+            chapter = []
+            for i in chapters:  # 对返回数据做组装，将chapters对应的video组装在一起
+                i['videos'] = [j.re for j in videos if j['chapter_id'] == i['id']]
+                chapter.append(i)
+            data = {'precourse':precourse,'chapters':chapter}
             return data
         return None
 
 
 if __name__ == '__main__':
-    DetailsDao().c_lesson(50)
+    DetailsDao().c_chapters(50)
     str1 = '1#2#3'
     print(str1.split("#"))
