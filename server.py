@@ -1,7 +1,7 @@
 from apps import app
 from flask_cors import CORS
 from views import user_app, cart_app, details_app, mine_app, free_course_app, \
-    combat_course_app, order_app, person_app, person_combat_course_app
+    combat_course_app, order_app, person_app, person_combat_course_app,collect_app
 
 APP_CONFIG={
     'host': '0.0.0.0',
@@ -21,5 +21,6 @@ if __name__ == '__main__':
     app.register_blueprint(order_app.order_blue)
     app.register_blueprint(person_app.blue)
     app.register_blueprint(person_combat_course_app.blue)
+    app.register_blueprint(collect_app.collect_blue)
 
     app.run(**APP_CONFIG)
