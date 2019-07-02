@@ -2,9 +2,9 @@ from dao import BaseDao
 
 
 class PersonCombatDao(BaseDao): # 我的实战
-    def comlist(self,where,args): # 获取用户课程表
-        return super(PersonCombatDao,self).list('user_courses',('course_id','video_name_id','add_time'
-                                                                ),where=where,args=args)
+    def comquery(self,*args): # 获取用户课程表
+        sql = 'select course_id,add_time from user_courses where user_id=%s and is_free=%s'
+        return super(PersonCombatDao,self).query(sql,*args)
 
     def u_course(self,course_id): # 根据课程id,获取课程信息
         course_data = self.list('courses',('id','name','img_url','description','study_num',

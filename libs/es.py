@@ -70,29 +70,19 @@ def init_index():
                          password='edu7654',
                          db='edu_api_db',charset='utf8')
     with db.cursor(cursor=DictCursor) as c:
-        c.execute('select id, doc_name, doc_title, doc_img, doc_exp from doctors')
+        c.execute('select course_id, name, img_url, description, degree, price, study_num from courses')
 
         es_ = ESearch('eduindex')
-        es_.remove_index()
         es_.create_index()
         for row_data in c.fetchall():
             print(row_data)
             es_.add_doc('doctor', **row_data)
 
-        print('--init add doctor doc_type all ok--')
+        print('--init add edu doc_type all ok--')
 
 
 if __name__ == '__main__':
-    # search = ESearch('eduindex')
-    # # search.create_index()
-    # doc = {
-    #     "name": "头痛3",
-    #     "yl": "高新医院3",
-    #     "phone": "17791692054"
-    # }
-    # # search.add_doc('bzdoc', 1, **doc)
-    # # search.add_doc('bzdoc', 3, **doc)
-    # print(search.query('17791692054'))
     # init_index()
     search = ESearch('eduindex')
-    print(search.query('静'))
+    # search.remove_index()
+    print(search.query('python'))
