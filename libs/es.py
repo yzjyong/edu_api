@@ -64,11 +64,8 @@ def init_index():
                          db='edu_api_db',
                          charset='utf8')
     with db.cursor(cursor=DictCursor) as c:
-        c.execute('select course_id, description, degree, price, study_num from courses')
-        # c.execute('select t_id, t_name, t_job from teachers')
-
+        c.execute('select course_id, name, img_url, description, degree, price, study_num from courses')
         es_ = ESearch('eduindex')
-        es_.remove_index()
         es_.create_index()
         for row_data in c.fetchall():
             print(row_data)
@@ -80,6 +77,5 @@ def init_index():
 if __name__ == '__main__':
     # init_index()
     search = ESearch('eduindex')
-    # search.create_index()
     # search.remove_index()
-    # print(search.query('HTML'))
+    print(search.query('python'))
