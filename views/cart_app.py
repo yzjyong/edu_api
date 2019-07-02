@@ -8,7 +8,7 @@ from logger import api_logger
 cart_blue = Blueprint("cart_blue", __name__)
 
 
-@cart_blue.route("/add_cart/", methods=["GET", ])   #还需传递参数token
+@cart_blue.route("/addcart/", methods=["GET", ])   #还需传递参数token
 def add_cart_view():
     token = request.headers.get("token")
     c_id = request.args.get("cid")
@@ -23,9 +23,7 @@ def add_cart_view():
         # 如果没有则创建一条购物车记录
         if not bool(cart):
             try:
-                print("cart", {"user_id": u_id, "course_id": c_id, "is_select": True})
                 state = add_cart.save("carts", **{"user_id": u_id, "course_id": c_id, "is_select": True})
-                print(state, "state")
                 if state:
                     result = {"code": 200, 'msg': "商品已添加至购物车！"}
                 else:
@@ -42,13 +40,12 @@ def add_cart_view():
     return jsonify(result)
 
 
-@cart_blue.route("/my_cart/",methods=["GET", ])
+@cart_blue.route("/cart/",methods=["GET", ])
 def cart_view():
     token = request.headers.get("token")           #验证当前用户是否登录
     u_id = get_token_user_id(token)
     if u_id:
         # 通过用户id查询当前用户的购物车记录,及课程信息
-        print(u_id,type(u_id))
         cart_obj = CartDao()
         try:
             course_info = cart_obj.get_cart_course(u_id)

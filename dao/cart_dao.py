@@ -16,7 +16,7 @@ class CartDao(BaseDao):
 
     # 查询当前用户购物车中的课程信息
     def get_cart_course(self, uid):
-        sql = "select carts.is_select,courses.id,courses.name,courses.degree,courses.price,courses.img_url" \
+        sql = "select carts.is_select,courses.course_id,courses.name,courses.degree,courses.price,courses.img_url" \
               " from carts join courses on carts.course_id = courses.id where carts.user_id=%s"
         course_info = self.query(sql, uid)
         return course_info

@@ -10,7 +10,7 @@ import uuid
 order_blue = Blueprint("order_blue", __name__)
 
 
-@order_blue.route("/confirm_order/", methods=["GET", ])
+@order_blue.route("/confirmorder/", methods=["GET", ])
 def confirm_order():
     token = request.headers.get("token", None)
     if token is None:  # 传递参数中未传递token
@@ -33,17 +33,15 @@ def confirm_order():
     return jsonify({"code": 201, "msg": "用户还未登录或注册！"})
 
 
-@order_blue.route("/add_order/", methods=["POST", ])  # 提交订单
+@order_blue.route("/addorder/", methods=["POST", ])  # 提交订单
 def add_order():
     token = request.headers.get("token", None)
     if token is None:
         return jsonify({"code": 201, "msg": "token查询参数必须提供"})
     resp = request.get_json()
     total = resp.get("total")
-    print("----", total)
     type1 = resp.get("type")
     c_id = resp.get("course")  # 获取的c_id是字符串 <class 'str'>
-    print('=====', c_id, type(c_id))
     u_id = cache_.get_token_user_id(token)
     if u_id:
         if type1 == "from_cart":  # 如果是从购物车提交订单
@@ -55,7 +53,7 @@ def add_order():
                 if total_price == total:  # 提交订单传递的总价是否和后台计算的总价相等
                     order_obj = OrderDao()
                     # user_course = UserCourseDao()
-                    order_num = crypt.get_order_code()  # 生成订单编号
+                    order_num = order_obj.next_order_num()  # 生成订单编号
                     for course in course_info:  # 创建订单记录
                         order_success = order_obj.save("orders", **{"order_num": order_num, "user_id": u_id,
                                                                     "course_id": course.get("id"),
@@ -70,11 +68,9 @@ def add_order():
                     return jsonify({"code": 200, "order_num": order_num, "course": course_info})
                 return jsonify({"code": 201, "msg": "价格不正确"})
             elif len(c_id) == 1:
-                print(course_info, "bbbbbbbbbbbbbbbbb")
                 if total_price == total:
-                    print(course_info, total_price, "00000000000")
                     order_obj = OrderDao()
-                    order_num = crypt.get_order_code()
+                    order_num = order_obj.next_order_num()
                     order_success = order_obj.save("orders", **{"order_num": order_num, "user_id": u_id,
                                                                 "course_id": course_info.get("id"),
                                                                 "price": course_info.get("price")})
@@ -86,13 +82,11 @@ def add_order():
 
         elif type1 == "1":  # 如果是立即购买提交订单
             pay_dao = PayDao()
-            print(u_id, c_id, "12334444444")
             course_info = pay_dao.get_pay_course(u_id, c_id).get("pay_course")
             total_price = pay_dao.get_pay_course(u_id, c_id).get("total_price")
             if total_price == total:  # 总价相等，创建一条订单记录
-                print(course_info, total_price, "00000000000")
                 order_obj = OrderDao()
-                order_num = crypt.get_order_code()
+                order_num = order_obj.next_order_num()
                 order_success = order_obj.save("orders", **{"order_num": order_num, "user_id": u_id,
                                                             "course_id": course_info[0].get("cid"),
                                                             "price": course_info[0].get("price")})
@@ -102,7 +96,7 @@ def add_order():
     return jsonify({"code": 201, "msg": "用户未登录或注册"})
 
 
-@order_blue.route("/my_order/", methods=["GET", ])
+@order_blue.route("/perorder/", methods=["GET", ])
 def my_order():
     token = request.headers.get("token")
     if token is None:
@@ -113,19 +107,22 @@ def my_order():
         order_all_info = order.get_order_info(u_id)  # 订单的全部信息
         order_pay = order.get_order_pay_state(u_id).get("pay")  # 已支付的订单信息
         order_no_pay = order.get_order_pay_state(u_id).get("no_pay")  # 未支付的订单信息
-        return jsonify({
-            "code": 200,
-            'msg': "ok",
-            'data': {
-                "order_all_info": order_all_info,
-                "order_pay": order_pay,
-                "order_no_pay": order_no_pay
-            }
-        })
+        if any((order_all_info,order_pay,order_no_pay)):
+            return jsonify({
+                "code": 200,
+                'msg': "ok",
+                'data': {
+                    "order_all_info": order_all_info,
+                    "order_pay": order_pay,
+                    "order_no_pay": order_no_pay
+                }
+            })
+        else:
+            return jsonify({"code":200,"msg":"用户暂未相关订单"})
     return jsonify({"code": 201, "msg": "用户还未登录或注册"})
 
 
-@order_blue.route("/order_detail/", methods=["GET", ])
+@order_blue.route("/orderdetail/", methods=["GET", ])
 def order_detail():
     token = request.args.get("token", None)
     order_num = request.args.get("trade_number")
@@ -141,7 +138,7 @@ def order_detail():
     return jsonify({"code": 201, "msg": "用户还未登录或注册"})
 
 
-@order_blue.route("/cancel_order/", methods=["POST", ])
+@order_blue.route("/cancelorder/", methods=["POST", ])
 def cancel_order():
     token = request.args.get("token", None)
     order_num = request.args.get("trade_number")

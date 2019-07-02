@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from dao import BaseDao
 from logger import api_logger
 
@@ -29,13 +31,6 @@ class OrderDao(BaseDao):
             'no_pay':order_no_pay_list    #未支付的课程信息
         }
 
-    def get_order_course(self,cid,uid):
-        sql = "select videos.name from videos join orders on videos.course_id = orders.course_id" \
-              " join users on users.id = orders.user_id"
-        course = self.query(sql,(cid,uid))
-        return course
-
-
     def get_order_detail(self,uid,o_num):    #通过订单编号获取当前用户的订单详情信息
         sql = "select * from orders where user_id=%s and order_num=%s"
         order_detail = self.query(sql,*(uid,o_num))
@@ -48,3 +43,17 @@ class OrderDao(BaseDao):
             c.execute(sql,(uid,o_num))
             success = True
         return success
+
+    #生成订单编号
+    def next_order_num(self):
+        data = self.query("select max(order_num) as max_num from orders")[0]
+        next_num = data.get('max_num')
+        current_date = datetime.now().strftime('%Y%m%d')
+        if next_num:
+            last_date = next_num[:8]
+            last_num = next_num[8:]
+            if current_date == last_date:
+                last_num = int(last_num) + 1
+                return "%s%s" % (last_date,str(last_num).rjust(5,'0'))
+
+        return '%s00001' % current_date
