@@ -22,7 +22,7 @@ def personinfo(key):
                 img_url = oss.get_url(key) if img_type == 0 else oss.get_small_url(key)
                 perinfo[0]['url'] = img_url
                 return jsonify(perinfo)
-            return jsonify({'code': 203, 'msg': '查询失败！'})
+            return jsonify({'code': 201, 'msg': '查询失败！'})
         else:
             return jsonify({'code': 203, 'msg': '你还未登录！'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
@@ -54,7 +54,7 @@ def changeinfo():
                 PersonDao().perupdate(k, v, id)
             return ({'code': 200, 'msg': 'ok!'})
         else:
-            return jsonify({'code': 203, 'msg': 'POST请求参数必须有token！'})
+            return jsonify({'code': 204, 'msg': 'POST请求参数必须有token！'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
 
 

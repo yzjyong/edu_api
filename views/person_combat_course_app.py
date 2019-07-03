@@ -16,7 +16,7 @@ def person_combat():    # 全部实战
                 course_id = [i['course_id'] for i in per_combat_info]
                 u_course = {i:PersonCombatDao().u_course(course_id[i]) for i in range(len(course_id))}
                 return jsonify(u_course)
-            return jsonify({'code':203,'msg':'该用户无实战课程'})
+            return jsonify({'code':201,'msg':'该用户无实战课程'})
         return jsonify({'code':203,'msg':'用户尚未登录'})
     return jsonify({'code': 304, 'msg': '传入数据为空'})
 

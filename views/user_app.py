@@ -2,7 +2,7 @@ import os,random,uuid
 from datetime import datetime
 from flask import Blueprint, request,jsonify
 from werkzeug.datastructures import FileStorage
-from libs import r, cache_, oss
+from libs import r, cache_
 from dao.phone_dao import PhoneDao
 from dao.user_dao import UserDao
 from logger import api_logger
@@ -24,12 +24,12 @@ def send_msg():
                 r.setex('msg'+u_phone,code,120)  # 保存到redis缓存
             except Exception as e:
                 api_logger.error(e)
-                return jsonify({'code':802,'msg':'短信验证码保存失败'})
+                return jsonify({'code':201,'msg':'短信验证码保存失败'})
             api_logger.info('发送手机号：%s，短信验证码为：%s'%(u_phone,code))
-            return jsonify({'code':200,'msg':'短信验证码发送成功！'})
+            return jsonify({'code':200,'msg':'ok'})
         if res['Code'] == 'isv.BUSINESS_LIMIT_CONTROL':
-            return jsonify({'code':303,'msg':'频繁验证，请稍后再试'})
-        return jsonify({'code':303,'msg':'请输入正确的手机号码'})
+            return jsonify({'code':205,'msg':'频繁验证，请稍后再试'})
+        return jsonify({'code':206,'msg':'请输入正确的手机号码'})
     return jsonify({'code':304,'msg':'传入数据为空'})
 
 # 检查手机号码
@@ -37,11 +37,11 @@ def send_msg():
 def check_phone():
     u_phone = request.args.get('phone')
     result = {
-        'code': 200,
+        'code': 201,
         'msg': '手机号不存在'
     }
     if UserDao().check_login_phone(u_phone):
-        result['code'] = 205
+        result['code'] = 202
         result['msg'] = '手机号已存在'
 
     return jsonify(result)
@@ -68,11 +68,12 @@ def msglogin():
                         return jsonify({'code': 200,'token': token,'user_data': login_user})
                     return jsonify(login_user)
                 except Exception as e:
+                    api_logger.info(e)
                     return jsonify({'code': 202,'msg':str(e)})
-            return jsonify({'code': 304,'msg':'该手机尚未注册'})
+            return jsonify({'code': 203,'msg':'该手机尚未注册'})
         else:
             return jsonify({
-                'code': 101,
+                'code': 204,
                 'msg': '请求参数u_phone和u_auth_string必须存在'
             })
     return jsonify({'code': 304, 'msg': '传入数据为空'})
@@ -99,7 +100,7 @@ def msg_login():
             return jsonify(login_user)
         else:
             return jsonify({
-                'code': 101,
+                'code': 204,
                 'msg': '请求参数u_phone和msg_code必须存在'
             })
     return jsonify({'code': 304, 'msg': '传入数据为空'})
@@ -128,10 +129,10 @@ def forgot_pwd():
                     return jsonify({'code': 200, 'token': token, 'user_data': login_user})
                 return jsonify(login_user)
             else:   # 手机号码不存在，提示
-                return jsonify({'code': 300, 'msg': '请填写注册手机号'})
+                return jsonify({'code': 203, 'msg': '请填写注册手机号'})
         else:
             return jsonify({
-                'code': 101,
+                'code': 204,
                 'msg': '请求参数u_phone,msg_code,u_auth_string必须存在'
             })
     return jsonify({'code': 304, 'msg': '传入数据为空'})

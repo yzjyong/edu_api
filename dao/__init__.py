@@ -80,7 +80,6 @@ class BaseDao():
         else:  # 条件查询
             sql = "select {} from {} where {}={} limit {},{}".format \
                 (','.join(*fileds), table_name, where, args, (page - 1) * page_size, page_size)
-        print(sql)
         with self.db as c:
             c.execute(sql)
             result = c.fetchall()
