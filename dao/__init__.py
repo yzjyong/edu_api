@@ -3,7 +3,7 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    "host": "localhost",
+    "host": "121.199.63.71",
     "port": 3306,
     "user": "eduadmin",
     "password": "edu7654",
@@ -99,15 +99,15 @@ class BaseDao():
         return data
 
     # 计数
-    def count(self, first_table_name, *fileds, arg, alias, second_table_name=None, b_con=None, a_con=None,
+    def count(self, first_table_name, *fields, arg, alias, second_table_name=None, b_con=None, a_con=None,
               b_arg=None,
               a_arg=None, args):
         if not second_table_name:
             sql = "select {}, count({}) as {} from {} group by {}".format \
-                (','.join(*fileds), arg, alias, first_table_name, args)
+                (','.join(*fields), arg, alias, first_table_name, args)
         else:
             sql = "select {}, count({}) as {} from {} join {} on {}={} and {}={} group by {}".format \
-                (','.join(*fileds), arg, alias, first_table_name, second_table_name, b_con, a_con, b_arg, a_arg,
+                (','.join(*fields), arg, alias, first_table_name, second_table_name, b_con, a_con, b_arg, a_arg,
                  args)
         with self.db as c:
             c.execute(sql)

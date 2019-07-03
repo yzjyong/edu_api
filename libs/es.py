@@ -1,9 +1,7 @@
-"""
-封装ElasticSearch搜索引擎的SDK(library库)
-"""
 import requests
 import pymysql
 from pymysql.cursors import DictCursor
+
 from dao import DB
 
 
@@ -15,8 +13,6 @@ class ESearch():
 
     def create_index(self):
         url = f'http://{self.host}:{self.port}/{self.index}'
-        # ES基于json数据进行交互的，所以上传数据必须是json格式的数据
-        # resp是请求响应对象， 通过resp.json()获取响应的json数据
         resp = requests.put(url, json={
             "settings": {
                 "number_of_shards": 5,
@@ -26,12 +22,11 @@ class ESearch():
         resp_data = resp.json()
         print(resp_data)
         if resp_data.get('acknowledged'):
-            print('create index %s ok!' % self.index)
+            print('create %s index %s ok!' % (self.port, self.index))
 
     def remove_index(self):
         url = f'http://{self.host}:{self.port}/{self.index}'
         requests.delete(url)
-
 
     def add_doc(self, doc_type, id=None, **values):
         url = f'http://{self.host}:{self.port}/{self.index}/{doc_type}/'
@@ -62,37 +57,25 @@ class ESearch():
 
 
 def init_index():
-
-    # 连接数据库，将doctors表数据添加到索引库中
     db = pymysql.Connect(host="121.199.63.71",
                          port=3306,
                          user='eduadmin',
                          password='edu7654',
-                         db='edu_api_db',charset='utf8')
+                         db='edu_api_db',
+                         charset='utf8')
     with db.cursor(cursor=DictCursor) as c:
-        c.execute('select id, doc_name, doc_title, doc_img, doc_exp from doctors')
-
+        c.execute('select course_id, name, img_url, description, degree, price, study_num from courses')
         es_ = ESearch('eduindex')
-        es_.remove_index()
         es_.create_index()
         for row_data in c.fetchall():
             print(row_data)
-            es_.add_doc('doctor', **row_data)
+            es_.add_doc('course', **row_data)
 
-        print('--init add doctor doc_type all ok--')
+        print('__init add course doc_type all ok--')
 
 
 if __name__ == '__main__':
-    # search = ESearch('eduindex')
-    # # search.create_index()
-    # doc = {
-    #     "name": "头痛3",
-    #     "yl": "高新医院3",
-    #     "phone": "17791692054"
-    # }
-    # # search.add_doc('bzdoc', 1, **doc)
-    # # search.add_doc('bzdoc', 3, **doc)
-    # print(search.query('17791692054'))
     # init_index()
     search = ESearch('eduindex')
-    print(search.query('静'))
+    # search.remove_index()
+    print(search.query('python'))
