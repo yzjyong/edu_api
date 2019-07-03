@@ -1,0 +1,11 @@
+[2019-07-03 11:05:05 at 28 line of __init__.py ] (1452, 'Cannot add or update a child row: a foreign key constraint fails (`edu_api_db`.`carts`, CONSTRAINT `carts_course_id_bfb57d95_fk_courses_id` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`))')
+[2019-07-03 11:34:44 at 28 line of __init__.py ] (1452, 'Cannot add or update a child row: a foreign key constraint fails (`edu_api_db`.`carts`, CONSTRAINT `carts_course_id_bfb57d95_fk_courses_id` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`))')
+[2019-07-03 11:36:38 at 28 line of __init__.py ] (1452, 'Cannot add or update a child row: a foreign key constraint fails (`edu_api_db`.`carts`, CONSTRAINT `carts_course_id_bfb57d95_fk_courses_id` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`))')
+[2019-07-03 11:40:05 at 28 line of __init__.py ] (1452, 'Cannot add or update a child row: a foreign key constraint fails (`edu_api_db`.`carts`, CONSTRAINT `carts_course_id_bfb57d95_fk_courses_id` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`))')
+[2019-07-03 11:51:57 at 28 line of __init__.py ] sequence item 0: expected str instance, dict found
+[2019-07-03 11:52:49 at 28 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''id': '50'},'1')' at line 1")
+[2019-07-03 11:53:18 at 28 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''id': '50'},'1')' at line 1")
+[2019-07-03 11:55:23 at 28 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''id': '50'},'1')' at line 1")
+[2019-07-03 11:56:46 at 28 line of __init__.py ] (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''id': '50'},'1')' at line 1")
+[2019-07-03 13:00:00 at 28 line of __init__.py ] (1264, "Out of range value for column 'order_num' at row 1")
+[2019-07-03 13:00:46 at 28 line of __init__.py ] (1264, "Out of range value for column 'order_num' at row 1")

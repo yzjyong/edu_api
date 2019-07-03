@@ -12,8 +12,6 @@ def collect_course():
     type1 = request.args.get("type")
     c_id = request.args.get("cid")
     u_id = cache_.get_token_user_id(token)
-    print(type1,type(type1),"00000")
-    print(u_id,type(u_id))
     if u_id:
         try:
             if type1 == "0":  # 如果type==0,则添加收藏当前课程
@@ -30,7 +28,7 @@ def collect_course():
     return jsonify({"code": 201, "msg": "用户还未登录或注册"})
 
 
-@collect_blue.route("/my_collect/", methods=["GET"])
+@collect_blue.route("/percollect/", methods=["GET"])
 def my_collect():
     token = request.headers.get("token")
     u_id = cache_.get_token_user_id(token)
