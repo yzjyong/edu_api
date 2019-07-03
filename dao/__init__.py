@@ -44,7 +44,7 @@ class BaseDao():
                )
         success = False
         with self.db as c:
-
+            print("sql",sql)
             c.execute(sql, args=values)
             api_logger.info('%s ok!' % sql)
             success = True

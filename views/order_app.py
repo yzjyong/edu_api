@@ -10,32 +10,33 @@ import uuid
 order_blue = Blueprint("order_blue", __name__)
 
 
-@order_blue.route("/confirmorder/", methods=["GET", ])
+@order_blue.route("/confirmorder/", methods=["GET"])
 def confirm_order():
-    token = request.headers.get("token", None)
+    token = request.get_json().get("token",None)
     if token is None:  # 传递参数中未传递token
         return jsonify({"code": 201, "msg": "token查询参数必须提供！"})
-    cid = request.args.get("cid")  # 获取查询字符串中的课程id
+    c_id = request.args.get("cid")  # 获取查询字符串中的课程id
     types = request.args.get("type")  # 获取查询字符串中的购买类型的
     u_id = cache_.get_token_user_id(token)
     if u_id:
-        if types == "from_cart":  # 如果是从购物车去结算
+        if types == "fromcart":  # 如果是从购物车去结算
             cart_obj = CartDao()
-            course_info = cart_obj.will_pay_course(cid, u_id).get("course_list")
-            total_price = cart_obj.will_pay_course(cid, u_id).get("total_price")
+            course_info = cart_obj.will_pay_course(c_id, u_id).get("course_list")
+            total_price = cart_obj.will_pay_course(c_id, u_id).get("total_price")
             return jsonify({"code": 200, "products": course_info, "total_price": total_price})
-        elif types == "1":  # 如果是立即购买结算
+        elif types == "fromcombat":  # 如果是立即购买结算
             pay_obj = PayDao()
-            course_info = pay_obj.get_pay_course(u_id, cid).get("pay_course")
-            total_price = pay_obj.get_pay_course(u_id, cid).get("total_price")
+            cid = pay_obj.get_course_id(c_id)
+            course_info = pay_obj.get_pay_course(cid).get("pay_course")
+            total_price = pay_obj.get_pay_course(cid).get("total_price")
             return jsonify({"code": 200, "products": course_info, "total_price": total_price})
 
     return jsonify({"code": 201, "msg": "用户还未登录或注册！"})
 
 
-@order_blue.route("/addorder/", methods=["POST", ])  # 提交订单
+@order_blue.route("/addorder/", methods=["POST"])  # 提交订单
 def add_order():
-    token = request.headers.get("token", None)
+    token = request.get_json().get("token")
     if token is None:
         return jsonify({"code": 201, "msg": "token查询参数必须提供"})
     resp = request.get_json()
@@ -43,8 +44,9 @@ def add_order():
     type1 = resp.get("type")
     c_id = resp.get("course")  # 获取的c_id是字符串 <class 'str'>
     u_id = cache_.get_token_user_id(token)
+    print(c_id)
     if u_id:
-        if type1 == "from_cart":  # 如果是从购物车提交订单
+        if type1 == "fromcart":  # 如果是从购物车提交订单
             cart_dao = CartDao()
             course_info = cart_dao.will_pay_course(c_id, u_id).get("course_list")
             total_price = cart_dao.will_pay_course(c_id, u_id).get("total_price")
@@ -65,7 +67,7 @@ def add_order():
                             if cart_delete:
                                 continue
                     # 返回订单信息
-                    return jsonify({"code": 200, "order_num": order_num, "course": course_info})
+                    return jsonify({"code": 200, "order_num": order_num, "data": course_info})
                 return jsonify({"code": 201, "msg": "价格不正确"})
             elif len(c_id) == 1:
                 if total_price == total:
@@ -77,26 +79,27 @@ def add_order():
                     if order_success:  # 如果创建订单记录成功，返回订单信息
                         cart_delete = cart_dao.delete_user_cart_course(course_info.get("id"), u_id)
                         if cart_delete:
-                            return jsonify({"code": 200, "order_num": order_num, "course": course_info})
+                            return jsonify({"code": 200, "order_num": order_num, "data": course_info})
                 return jsonify({"code": 201, "msg": "价格不正确"})
 
-        elif type1 == "1":  # 如果是立即购买提交订单
+        elif type1 == "fromcombat":  # 如果是立即购买提交订单
             pay_dao = PayDao()
-            course_info = pay_dao.get_pay_course(u_id, c_id).get("pay_course")
-            total_price = pay_dao.get_pay_course(u_id, c_id).get("total_price")
+            cid = pay_dao.get_course_id(c_id)
+            course_info = pay_dao.get_pay_course(cid).get("pay_course")
+            total_price = pay_dao.get_pay_course(cid).get("total_price")
             if total_price == total:  # 总价相等，创建一条订单记录
                 order_obj = OrderDao()
                 order_num = order_obj.next_order_num()
                 order_success = order_obj.save("orders", **{"order_num": order_num, "user_id": u_id,
-                                                            "course_id": course_info[0].get("cid"),
+                                                            "course_id": course_info[0].get("id"),
                                                             "price": course_info[0].get("price")})
                 if order_success:  # 如果创建订单记录成功，返回订单信息
-                    return jsonify({"code": 200, "order_num": order_num, "course": course_info})
+                    return jsonify({"code": 200, "order_num": order_num, "data": course_info})
             return jsonify({"code": 201, "msg": "价格不正确"})
     return jsonify({"code": 201, "msg": "用户未登录或注册"})
 
 
-@order_blue.route("/perorder/", methods=["GET", ])
+@order_blue.route("/perorder/", methods=["GET"])
 def my_order():
     token = request.headers.get("token")
     if token is None:
@@ -138,7 +141,7 @@ def order_detail():
     return jsonify({"code": 201, "msg": "用户还未登录或注册"})
 
 
-@order_blue.route("/cancelorder/", methods=["POST", ])
+@order_blue.route("/cancelorder/", methods=["GET"])
 def cancel_order():
     token = request.args.get("token", None)
     order_num = request.args.get("trade_number")
