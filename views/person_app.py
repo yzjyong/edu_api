@@ -11,7 +11,7 @@ blue = Blueprint('persblue',__name__)
 # 展示个人中心
 @blue.route('/person/<string:key>',methods=['GET'])
 def personinfo(key):
-    resp = eval(request.get_data())
+    resp = request.args
     if resp: # 验证请求数据
         token = resp.get('token')
         id = get_token_user_id(token)
@@ -29,7 +29,7 @@ def personinfo(key):
 
 
 # 修改个人信息
-@blue.route('/change/',methods=['POST'])
+@blue.route('/change/',methods=['POST'],strict_slashes=False)
 def changeinfo():
     resp = eval(request.get_data())
     if resp:

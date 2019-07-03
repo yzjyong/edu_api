@@ -1,8 +1,9 @@
+"""
+封装ElasticSearch搜索引擎的SDK(library库)
+"""
 import requests
 import pymysql
 from pymysql.cursors import DictCursor
-
-from dao import DB
 
 
 class ESearch():

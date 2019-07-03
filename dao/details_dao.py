@@ -8,6 +8,7 @@ class DetailsDao(BaseDao):
 
     def c_info(self,course_id):  # 所有章节信息
         courseinfo = self.c_list('*','course_id',course_id)  # 获取详情页顶部信息，图片，类名，title
+        print(courseinfo)
         return courseinfo
 
     def c_type(self,type_id,child_type_id):  # 大类小类名称
@@ -19,6 +20,8 @@ class DetailsDao(BaseDao):
         clist = ['id', 'name', 'img_url','description','degree', 'course_time',
                  'study_num', 'course_score','youneed_know', 'teacher_tell',
                  'teacher_id']
+        # 将字符串类型的列表数据转换为列表类型
+        course['youneed_know'],course['teacher_tell'] = eval(course['youneed_know']),eval(course['teacher_tell'])
         precourse = {k:course[k] for k in clist}    # 对返回数据按前端需求筛选
         t_info = BaseDao().list('teachers',('t_name','t_job','t_pic'),
                                     where='id',args=precourse['teacher_id'])[0]
@@ -40,13 +43,13 @@ class DetailsDao(BaseDao):
         detail_url = precourse.pop('detail_url').split("#") # 取出所有详情页中的url，并做组装
         precourse['detail_url'] = {i:detail_url[i] for i in range(len(detail_url))}
         chapters = self.list('chapters', ('id', 'name'), where='course_id', args=precourse['id'])
-        videos = self.list('videos', ('name', 'video_url', 'chapter_id'), where='course_id', args=precourse['id'])
+        videos = self.list('videos', ('name', 'video_url', 'chapter_id'), where='course_id', args=precourse['id'],page_size=200)
         if all((precourse,chapters,videos)):
-            precourse['video_url'] = videos[0][0]['videos'][0]  # 取第一章第一个视频作为试看视频,插入详情字典
-            del videos['video_url'] # 删除videos中的video_url字段
+            precourse['video_url'] = videos[0]['video_url']  # 取第一章第一个视频作为试看视频,插入详情字典
+            videos = [{'name':i.pop('name'),'chapter_id':i.pop('chapter_id')} for i in videos]   # 删除videos中的video_url字段
             chapter = []
             for i in chapters:  # 对返回数据做组装，将chapters对应的video组装在一起
-                i['videos'] = [j.re for j in videos if j['chapter_id'] == i['id']]
+                i['videos'] = [j for j in videos if j['chapter_id'] == i['id']]
                 chapter.append(i)
             data = {'precourse':precourse,'chapters':chapter}
             return data

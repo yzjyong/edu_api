@@ -42,7 +42,6 @@ class BaseDao():
                ','.join(values.keys()),
                ','.join(['%%(%s)s' % key for key in values.keys()])
                )
-        print("sql",sql)
         success = False
         with self.db as c:
 
@@ -57,7 +56,6 @@ class BaseDao():
         success = False
         with self.db as c:
             c.execute(sql)
-            print("sql11",sql)
             api_logger.info('%s ok!' % sql)
             success = True
         return success
@@ -93,10 +91,11 @@ class BaseDao():
     def query(self, sql, *args):
         with self.db as c:
             c.execute(sql, args=args)
+            api_logger.info('%s ok!' % sql)
             data = c.fetchall()
             if data:
                 data = list(data)
-        return data
+            return data
 
     # 计数
     def count(self, first_table_name, *fields, arg, alias, second_table_name=None, b_con=None, a_con=None,

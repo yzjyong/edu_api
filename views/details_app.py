@@ -6,24 +6,24 @@ blue = Blueprint('detailblue',__name__)
 # 免费介绍页
 @blue.route('/learn/',methods=['GET'])
 def course_learn():
-    resp = request.get_data()
-    course_id = eval(resp)['course_id'] if bool(resp) else ''
+    resp = request.args
+    course_id = resp.get('course_id') if bool(resp) else ''
     if course_id.isdigit():
         courseinfo = DetailsDao().c_info(course_id)
         if courseinfo:
-            data = DetailsDao().c_presentation(courseinfo[0])[0]
+            data = DetailsDao().c_presentation(courseinfo[0])
             course_type_id = courseinfo[0]["course_type_id"]
             child_type_id = courseinfo[0]['course_child_type_id']
-            data['type'],data['child_type'] = DetailsDao().c_type(course_type_id,child_type_id)[0]
+            data['type'],data['child_type'] = DetailsDao().c_type(course_type_id,child_type_id)
             return jsonify(data)
-        return jsonify({'code':202,'msg':'该课程不存在'})
+        return jsonify({'code':201,'msg':'该课程不存在'})
     return jsonify({'code':202,'msg':'路由不合法'})
 
 # 免费详情页
 @blue.route('/learn/chapter/',methods=['GET'])
 def course_chapter():
-    resp = request.get_data()
-    course_id = eval(resp)['course_id'] if bool(resp) else ''
+    resp = request.args
+    course_id = resp.get('course_id') if bool(resp) else ''
     if course_id.isdigit():
         courseinfo = DetailsDao().c_info(course_id)
         if courseinfo:
@@ -33,23 +33,23 @@ def course_chapter():
             child_type_id = courseinfo[0]['course_child_type_id']
             data[0]['type'], data[0]['child_type'] = DetailsDao().c_type(course_type_id,child_type_id)
             return jsonify(data)
-        return jsonify({'code': 202, 'msg': '该课程不存在'})
+        return jsonify({'code': 201, 'msg': '该课程不存在'})
     return jsonify({'code': 202, 'msg': '路由不合法'})
 
 # 付费详情页
 @blue.route('/paylearn/',methods=['GET'])
 def pay_learn():
-    resp = request.get_data()
-    course_id = eval(resp)['course_id'] if bool(resp) else ''
+    resp = request.args
+    course_id = resp.get('course_id') if bool(resp) else ''
     if course_id.isdigit():
         courseinfo = DetailsDao().c_info(course_id)
         if courseinfo:
             data = DetailsDao().pay_detail(courseinfo[0])
             if data:
                 return jsonify(data)
-            return jsonify({'code': 202, 'msg': '查询失败'})
+            return jsonify({'code': 201, 'msg': '查询失败'})
         return jsonify({'code': 202, 'msg': '该课程不存在'})
-    return jsonify({'code': 202, 'msg': '路由不合法'})
+    return jsonify({'code': 203, 'msg': '路由不合法'})
 
 
 if __name__ == '__main__':
