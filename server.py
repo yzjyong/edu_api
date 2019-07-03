@@ -28,5 +28,4 @@ if __name__ == '__main__':
     app.register_blueprint(person_course_app.per_course_blue)
     app.register_blueprint(global_search_app.search_blue)
 
-
     app.run(**APP_CONFIG)
